@@ -5,7 +5,7 @@
     "url": "git+https://github.com/react-barcode-scanner/hooks.git"
   },
   "license": "MIT",
-  "version": "0.0.7-alpha",
+  "version": "0.0.6-alpha",
   "private": false,
   "main": "dist/index.js",
   "module": "dist/esm/index.js",
