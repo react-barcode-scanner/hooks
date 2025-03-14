@@ -39,17 +39,3 @@ jobs:
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
-
-  deploy-storybook:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 23
-          registry-url: 'https://registry.npmjs.org'
-      - run: yarn install
-      - run: yarn deploy-storybook
