@@ -22,7 +22,7 @@ jobs:
       - run: yarn install
       - run: npx rollup -c
 
-  publish-gpr:
+  publish-package:
     needs: build
     runs-on: ubuntu-latest
     permissions:
@@ -35,7 +35,8 @@ jobs:
         with:
           always-auth: true
           node-version: 23
-          registry-url: https://registry.npmjs.org
+          registry-url: 'https://registry.npmjs.org'
+      - run: echo .npmrc
       - run: npm publish --provenance --access public
         env:
           NPM_TOKEN: ${{secrets.NPM_AUTH_TOKEN}}
