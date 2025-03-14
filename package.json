@@ -2,7 +2,8 @@
   "name": "@react-barcode-scanner/hooks",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/react-barcode-scanner/hooks.git"
+    "url": "git+https://github.com/react-barcode-scanner/hooks.git",
+    "directory": "packages/@react-barcode-scanner/hooks"
   },
   "license": "MIT",
   "version": "0.0.6-alpha",
