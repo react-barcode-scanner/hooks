@@ -3,7 +3,7 @@ import {
     DeviceChoiceOptions,
     useDeviceStream,
     useGetDeviceList,
-    useHasCameraPermission
+    useHasCameraPermission,
 } from './camera';
 
 const defaultDeviceChoiceOptions: DeviceChoiceOptions = {
@@ -13,9 +13,9 @@ const defaultDeviceChoiceOptions: DeviceChoiceOptions = {
 
 export type UseWebcamOptions = {
     deviceChoiceOptions?: DeviceChoiceOptions;
-    onDevices?: (deviceList: MediaDeviceInfo[]) => void
+    onDevices?: (deviceList: MediaDeviceInfo[]) => void;
     shouldPlay?: boolean;
-}
+};
 
 export const useWebcam = (options: UseWebcamOptions = {}) => {
     const { deviceChoiceOptions, onDevices, shouldPlay } = options;
@@ -33,14 +33,13 @@ export const useWebcam = (options: UseWebcamOptions = {}) => {
         setWebcamVideo(webcamVideoRef.current);
     }, [hasPermission]);
 
-
     const { deviceList } = useGetDeviceList(hasPermission, onDevices);
 
     const combinedDeviceChoiceOptions = useMemo(() => {
         return Object.assign(
             { width: webcamVideo?.width ?? 640, height: webcamVideo?.height ?? 480 },
             deviceChoiceOptions ?? defaultDeviceChoiceOptions,
-            );
+        );
     }, [webcamVideo, deviceChoiceOptions]);
 
     const { stream } = useDeviceStream(hasPermission, deviceList, combinedDeviceChoiceOptions);
@@ -69,7 +68,8 @@ const useStreamToVideoElement = (
         if (!isStreaming && videoElement && stream) {
             videoElement.srcObject = stream;
             if (shouldPlay) {
-                videoElement.play()
+                videoElement
+                    .play()
                     .then(() => {
                         if (!active) {
                             return;
@@ -85,7 +85,9 @@ const useStreamToVideoElement = (
             }
         }
 
-        return () => { active = false; };
+        return () => {
+            active = false;
+        };
     }, [stream, videoElement, isStreaming, shouldPlay]);
 
     return { isStreaming };

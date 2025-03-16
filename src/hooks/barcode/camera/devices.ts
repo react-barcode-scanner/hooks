@@ -1,6 +1,9 @@
 import { useEffect, useState } from 'react';
 
-export const useGetDeviceList = (hasPermission: boolean, onDevices?: (deviceList: MediaDeviceInfo[]) => void): { deviceList: MediaDeviceInfo[] } => {
+export const useGetDeviceList = (
+    hasPermission: boolean,
+    onDevices?: (deviceList: MediaDeviceInfo[]) => void,
+): { deviceList: MediaDeviceInfo[] } => {
     const [deviceList, setDeviceList] = useState<MediaDeviceInfo[]>([]);
 
     useEffect(() => {
@@ -16,7 +19,9 @@ export const useGetDeviceList = (hasPermission: boolean, onDevices?: (deviceList
             });
         }
 
-        return () => { active = false; };
+        return () => {
+            active = false;
+        };
     }, [hasPermission, onDevices]);
 
     return { deviceList };
@@ -24,5 +29,5 @@ export const useGetDeviceList = (hasPermission: boolean, onDevices?: (deviceList
 
 const listDevices = async (): Promise<MediaDeviceInfo[]> => {
     let devices = await navigator.mediaDevices?.enumerateDevices?.();
-    return devices?.filter((device) => device.kind === 'videoinput') ?? [];
+    return devices?.filter(device => device.kind === 'videoinput') ?? [];
 };

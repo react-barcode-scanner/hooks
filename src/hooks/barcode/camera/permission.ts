@@ -7,14 +7,16 @@ export const useHasCameraPermission = () => {
     useEffect(() => {
         let active = true;
 
-        resolveCameraPermission().then((permission) => {
+        resolveCameraPermission().then(permission => {
             if (!active) {
                 return;
             }
             setHasPermission(permission);
         });
 
-        return () => { active = false; };
+        return () => {
+            active = false;
+        };
     }, [setHasPermission]);
 
     return { hasPermission };
@@ -22,10 +24,13 @@ export const useHasCameraPermission = () => {
 
 export const canGetUserMedia = async (): Promise<boolean> => {
     try {
-        let stream = await getUserMedia({
-            video: true,
-            audio: false,
-        }, 'canGetUserMedia');
+        let stream = await getUserMedia(
+            {
+                video: true,
+                audio: false,
+            },
+            'canGetUserMedia',
+        );
         removeStreamTracks(stream);
         return true;
     } catch (e) {
@@ -43,4 +48,4 @@ const getHasDeviceLabels = async (): Promise<boolean> => {
 const resolveCameraPermission = async (): Promise<boolean> => {
     let hasDeviceLabels = await getHasDeviceLabels();
     return hasDeviceLabels ? Promise.resolve(true) : canGetUserMedia();
-}
+};

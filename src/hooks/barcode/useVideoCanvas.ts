@@ -12,14 +12,14 @@ export type UseVideoCanvasOptions = {
     shouldPlay?: boolean;
     timeoutDelay?: number;
     zoom?: number;
-}
+};
 
 const playWithRetry = async (videoElement: HTMLVideoElement): Promise<any> => {
     try {
         return await videoElement.play();
     } catch (error) {
         console.log(error);
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             setTimeout(() => resolve(playWithRetry(videoElement)), 100);
         });
     }
@@ -46,41 +46,41 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
             return [0, 0, 0, 0, 0, 0, 0, 0];
         }
 
-        const originX = (webcamVideo.width / 2) - (canvas.width / (2 * zoom));
-        const originY = (webcamVideo.height / 2) - (canvas.height / (2 * zoom));
+        const originX = webcamVideo.width / 2 - canvas.width / (2 * zoom);
+        const originY = webcamVideo.height / 2 - canvas.height / (2 * zoom);
 
         return [
             // gets center of the video image
             originX,
             originY,
             // zooms center of video image
-            (canvas.width / zoom),
-            (canvas.height / zoom),
+            canvas.width / zoom,
+            canvas.height / zoom,
             0,
             0,
             canvas.width,
             canvas.height,
         ];
-
     }, [canvas, webcamVideo, zoom]);
 
-    const streamToCanvas = useMemo(() => () => {
-        if (!(context && webcamVideo)) {
-            setTimeout(streamToCanvas, 100);
-            return;
-        }
+    const streamToCanvas = useMemo(
+        () => () => {
+            if (!(context && webcamVideo)) {
+                setTimeout(streamToCanvas, 100);
+                return;
+            }
 
-        context.drawImage(webcamVideo, ...bounds);
-        if (shouldDraw) {
-            onDraw?.();
-        }
+            context.drawImage(webcamVideo, ...bounds);
+            if (shouldDraw) {
+                onDraw?.();
+            }
 
-        window.setTimeout(streamToCanvas, timeoutDelay);
-
-    }, [bounds, onDraw, timeoutDelay, webcamVideo, shouldDraw, context]);
+            window.setTimeout(streamToCanvas, timeoutDelay);
+        },
+        [bounds, onDraw, timeoutDelay, webcamVideo, shouldDraw, context],
+    );
 
     useEffect(() => {
-
         if (!context && canvas) {
             setContext(canvas?.getContext('2d'));
         }
@@ -96,5 +96,14 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
                 setHasListener(true);
             }
         }
-    }, [canvas, webcamVideo, hasListener, onPlay, shouldPlay, streamToCanvas, hasPermission, context]);
+    }, [
+        canvas,
+        webcamVideo,
+        hasListener,
+        onPlay,
+        shouldPlay,
+        streamToCanvas,
+        hasPermission,
+        context,
+    ]);
 };

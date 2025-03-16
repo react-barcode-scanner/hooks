@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { BarcodeDetector, BarcodeDetectorOptions, BarcodeFormat, DetectedBarcode } from '../types';
 
-declare let window: Window & typeof globalThis & {
-    BarcodeDetector: BarcodeDetector;
-};
+declare let window: Window &
+    typeof globalThis & {
+        BarcodeDetector: BarcodeDetector;
+    };
 
 type DetectedBarcodes = Map<string, ImageBitmap>;
 
@@ -16,18 +17,16 @@ const getBarcodeDetector = async (options: BarcodeDetectorOptions) => {
     }
     const hasNative = 'BarcodeDetector' in window;
     if (!hasNative) {
-        await import('@undecaf/barcode-detector-polyfill').then((BCD) => {
+        await import('@undecaf/barcode-detector-polyfill').then(BCD => {
             const { BarcodeDetectorPolyfill } = BCD;
-            window.BarcodeDetector = (
-                BarcodeDetectorPolyfill as unknown
-            ) as BarcodeDetector;
+            window.BarcodeDetector = BarcodeDetectorPolyfill as unknown as BarcodeDetector;
         });
     }
     return window.BarcodeDetector.getSupportedFormats().then((formats: BarcodeFormat[]) => {
         if (formats.length === 0) {
             return Promise.reject('No barcode detection');
         }
-        barcodeDetector = (new window.BarcodeDetector(options) as unknown) as BarcodeDetector;
+        barcodeDetector = new window.BarcodeDetector(options) as unknown as BarcodeDetector;
         return Promise.resolve(barcodeDetector);
     });
 };
@@ -71,7 +70,9 @@ export const useScanCanvas = (options: UseScanCanvasOptions) => {
                 const barcodes = await barcodeDetector?.detect(bitmap);
 
                 if (
-                    barcodes.length > 0 && barcodes.filter((code: DetectedBarcode) => !detectedBarcodes.has(code.rawValue)).length > 0
+                    barcodes.length > 0 &&
+                    barcodes.filter((code: DetectedBarcode) => !detectedBarcodes.has(code.rawValue))
+                        .length > 0
                 ) {
                     barcodes.forEach((barcode: DetectedBarcode) => {
                         if (detectedBarcodes.has(barcode.rawValue)) {

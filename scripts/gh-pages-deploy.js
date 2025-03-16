@@ -4,7 +4,7 @@ const ghpages = require('gh-pages');
 const OUTPUT_DIR = 'storybook-static';
 const SITE_BRANCH = 'deploy';
 
-const publishCallback = (err) => {
+const publishCallback = err => {
     err && console.error(`An error occurred deploying to Github Pages: ${err}`);
 };
 
