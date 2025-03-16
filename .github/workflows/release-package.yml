@@ -10,20 +10,7 @@ on:
 #      - main
 
 jobs:
-  build:
-    permissions:
-      id-token: write
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 23
-      - run: yarn install
-      - run: npx rollup -c
-
   publish-package:
-    needs: build
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -36,6 +23,8 @@ jobs:
           always-auth: true
           node-version: 23
           registry-url: 'https://registry.npmjs.org'
+      - run: yarn install
+      - run: npx rollup -c
       - run: npm pack
       - run: npm publish
         env:
