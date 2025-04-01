@@ -17,7 +17,7 @@ available, the `@undecaf/barcode-detector-polyfill` is used instead.
 Reference the Storybook stories
 ([demo site](https://react-barcode-scanner.github.io/hooks))
 for an example of implementation, as well as the companion package
-`[@react-barcode-scanner/components](https://github.com/react-barcode-scanner/components)`.
+[`@react-barcode-scanner/components`](https://github.com/react-barcode-scanner/components).
 
 ## API
 
