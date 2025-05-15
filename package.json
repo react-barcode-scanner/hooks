@@ -6,7 +6,7 @@
         "directory": "packages/@react-barcode-scanner/hooks"
     },
     "license": "MIT",
-    "version": "0.0.16-alpha",
+    "version": "0.0.17-alpha",
     "private": false,
     "main": "dist/index.js",
     "module": "dist/esm/index.js",
@@ -99,7 +99,7 @@
         "webpack": "5.94.0"
     },
     "peerDependencies": {
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0"
+        "react": "18 - 19",
+        "react-dom": "18 - 19"
     }
 }
