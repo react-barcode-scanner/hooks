@@ -82,7 +82,13 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
 
     useEffect(() => {
         if (!context && canvas) {
-            setContext(canvas?.getContext('2d'));
+            const canvasContext = canvas?.getContext('2d');
+            if (!canvasContext) {
+                return;
+            }
+            canvasContext.filter = 'grayscale(1) contrast(1)';
+            setContext(canvasContext);
+            return;
         }
 
         if (hasPermission && context && webcamVideo) {
