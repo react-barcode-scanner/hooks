@@ -22,7 +22,7 @@ export const useGetDeviceList = (
         return () => {
             active = false;
         };
-    }, [hasPermission, onDevices]);
+    }, [hasPermission]);
 
     return { deviceList };
 };

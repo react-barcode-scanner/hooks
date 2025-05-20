@@ -23,13 +23,19 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
     } = props;
 
     const [codes, setCodes] = useState<string[]>([]);
+    const [devices, setDevices] = useState<any[]>([]);
 
     const onScan = (code: string) => {
         setCodes(codes.concat(code));
     };
 
+    const onDevices = (devices: any[]) => {
+        setDevices(devices);
+    };
+
     const { webcamVideoRef, canvasRef, hasPermission } = useBarcodeScanner({
         zoom,
+        onDevices,
         onScan,
     });
 
