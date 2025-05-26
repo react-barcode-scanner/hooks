@@ -6,8 +6,8 @@
 }
 .scan-canvas {
     position: absolute;
-    top: 120px;
-    left: 160px;
+    top: 80px;
+    left: 80px;
 }
 .scan-canvas > canvas {
     background-color: #eee9;

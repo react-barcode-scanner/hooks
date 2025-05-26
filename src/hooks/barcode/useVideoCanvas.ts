@@ -46,8 +46,9 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
             return [0, 0, 0, 0, 0, 0, 0, 0];
         }
 
-        const originX = webcamVideo.width / 2 - canvas.width / (2 * zoom);
-        const originY = webcamVideo.height / 2 - canvas.height / (2 * zoom);
+        // center origin from video
+        const originX = (webcamVideo.width - canvas.width / zoom) / 2;
+        const originY = (webcamVideo.height - canvas.height / zoom) / 2;
 
         return [
             // gets center of the video image
