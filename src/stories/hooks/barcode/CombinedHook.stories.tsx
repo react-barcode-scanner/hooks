@@ -15,8 +15,8 @@ type CombinedHookStoriesProps = {
 
 const CombinedHookStories = (props: CombinedHookStoriesProps) => {
     const {
-        canvasWidth = 480,
-        canvasHeight = 320,
+        canvasWidth = 640,
+        canvasHeight = 480,
         videoWidth = 640,
         videoHeight = 480,
         zoom = 1,
@@ -74,8 +74,8 @@ type Story = StoryObj<typeof CombinedHookStories>;
 export const Primary: Story = {
     args: {
         zoom: 2,
-        canvasWidth: 480,
-        canvasHeight: 320,
+        canvasWidth: 512,
+        canvasHeight: 384,
         videoWidth: 640,
         videoHeight: 480,
     },
