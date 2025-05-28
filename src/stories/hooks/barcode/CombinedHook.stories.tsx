@@ -87,9 +87,9 @@ export const Primary: Story = {
         zoom: 2,
         canvasWidth: 320,
         canvasHeight: 240,
-        videoWidth: 480,
-        videoHeight: 376,
-        videoCropWidth: 480,
+        videoWidth: 320,
+        videoHeight: 240,
+        videoCropWidth: 320,
         videoCropHeight: 240,
     },
 };

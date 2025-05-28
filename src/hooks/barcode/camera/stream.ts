@@ -14,6 +14,15 @@ export const useDeviceStream = (
     deviceChoiceOptions: DeviceChoiceOptions,
 ) => {
     const [stream, setStream] = useState<MediaStream>();
+    const [trackSettings, setTrackSettings] = useState<MediaTrackSettings>();
+
+    const setStreamAndSettings = (stream: MediaStream) => {
+        if (!stream) {
+            return;
+        }
+        setStream(stream);
+        setTrackSettings(stream.getVideoTracks()?.[0].getSettings());
+    };
 
     const constraints = useMemo(
         () => getMediaConstraintsForDeviceChoiceOptions(deviceList, deviceChoiceOptions),
@@ -30,7 +39,7 @@ export const useDeviceStream = (
                         removeStreamTracks(stream);
                         return;
                     }
-                    setStream(stream);
+                    setStreamAndSettings(stream)
                 })
                 .catch(error => {
                     console.log(`requested device not available`, error);
@@ -41,9 +50,8 @@ export const useDeviceStream = (
                         .then(setStream)
                         .catch(error => {
                             console.log('no environment-facing camera available', error);
-                            return getUserMedia({ video: true }, 'useDeviceStream #3').then(
-                                setStream,
-                            );
+                            return getUserMedia({ video: true }, 'useDeviceStream #3')
+                                .then(setStreamAndSettings);
                         });
                 });
         }
@@ -53,7 +61,7 @@ export const useDeviceStream = (
         };
     }, [hasPermission, constraints]);
 
-    return { stream };
+    return { stream, trackSettings };
 };
 
 const getMediaConstraintsForDeviceChoiceOptions = (
@@ -109,15 +117,11 @@ const getMediaConstraintsForDeviceChoiceOptions = (
 // let useMediaAttempts = 0;
 // let useMediaSuccesses = 0;
 
-export const getUserMedia = (constraints: MediaStreamConstraints, context: string = '') => {
+export const getUserMedia = async (constraints: MediaStreamConstraints, context: string = '') => {
     // const attempts = ++useMediaAttempts;
     // console.log(`use media attempts: ${attempts} (${context})`, constraints);
     // const successes = useMediaSuccesses;
-    return navigator.mediaDevices.getUserMedia(constraints).then((stream: MediaStream) => {
-        // console.log(`use media success: ${successes + 1}/${attempts} (${context})`, constraints);
-        // useMediaSuccesses++;
-        return stream;
-    });
+    return await navigator.mediaDevices.getUserMedia(constraints);
 };
 
 export const removeStreamTracks = (stream: MediaStream): void => {

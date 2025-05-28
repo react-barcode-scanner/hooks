@@ -10,7 +10,14 @@ export type UseBarcodeScannerOptions = {
 
 export const useBarcodeScanner = (options: UseBarcodeScannerOptions) => {
     const { zoom = 1, deviceChoiceOptions, onScan, onDevices, shouldPlay = true } = options;
-    const { webcamVideo, webcamVideoRef, hasPermission, isStreaming, stream } = useWebcam({
+    const {
+        webcamVideo,
+        webcamVideoRef,
+        hasPermission,
+        isStreaming,
+        stream,
+        trackSettings,
+    } = useWebcam({
         deviceChoiceOptions,
         onDevices,
     });
@@ -22,6 +29,7 @@ export const useBarcodeScanner = (options: UseBarcodeScannerOptions) => {
     useVideoCanvas({
         onDraw,
         webcamVideo,
+        trackSettings,
         shouldDraw: canDetect,
         canvas,
         hasPermission,

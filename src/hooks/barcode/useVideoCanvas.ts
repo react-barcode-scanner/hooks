@@ -6,6 +6,7 @@ export type UseVideoCanvasOptions = {
     onDraw?: () => void;
     onPlay?: () => void;
     webcamVideo?: HTMLVideoElement;
+    trackSettings?: MediaTrackSettings;
     shouldDraw?: boolean;
     canvas?: HTMLCanvasElement | null;
     hasPermission?: boolean;
@@ -30,6 +31,7 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
         onDraw,
         onPlay,
         webcamVideo,
+        trackSettings,
         shouldDraw = true,
         canvas,
         hasPermission = true,
@@ -41,19 +43,22 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
     const [context, setContext] = useState<CanvasRenderingContext2D | null>();
     const [hasListener, setHasListener] = useState<boolean>(false);
 
-    const bounds: DrawImageBounds = useMemo(() => {
-        if (!(webcamVideo && canvas)) {
-            return [0, 0, 0, 0, 0, 0, 0, 0];
+    const bounds: DrawImageBounds | undefined = useMemo(() => {
+        if (!(webcamVideo && trackSettings && canvas)) {
+            return;
         }
-        
+
         const effectiveZoom = Math.pow(zoom, 2);
 
-        const centerX = webcamVideo.width / 2;
-        const centerY = webcamVideo.height / 2;
+        const trackWidth = trackSettings.width ?? webcamVideo.width;
+        const trackHeight = trackSettings.height ?? webcamVideo.height;
+
+        const centerX = trackWidth / 2;
+        const centerY = trackHeight / 2;
         const originX = centerX - centerX / effectiveZoom;
         const originY = centerY - centerY / effectiveZoom;
-        const sourceWidth = centerX + centerX / effectiveZoom;
-        const sourceHeight = centerY + centerY / effectiveZoom;
+        const sourceWidth = trackWidth / effectiveZoom;
+        const sourceHeight = trackHeight / effectiveZoom;
 
         return [
             originX,
@@ -65,12 +70,22 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
             canvas.width,
             canvas.height,
         ];
-    }, [canvas, webcamVideo, zoom]);
+    }, [canvas, webcamVideo, trackSettings, zoom]);
+
+    const [timeoutResult, setTimeoutResultResult] = useState<number>();
 
     const streamToCanvas = useMemo(
         () => () => {
-            if (!(context && webcamVideo)) {
-                setTimeout(streamToCanvas, 100);
+            if (!bounds) {
+                return;
+            }
+            if (!(
+                context && webcamVideo
+            )) {
+                if (timeoutResult) {
+                    clearTimeout(timeoutResult);
+                }
+                setTimeoutResultResult(window.setTimeout(streamToCanvas, timeoutDelay));
                 return;
             }
 
@@ -79,12 +94,18 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
                 onDraw?.();
             }
 
-            window.setTimeout(streamToCanvas, timeoutDelay);
+            if (timeoutResult) {
+                clearTimeout(timeoutResult);
+            }
+            setTimeoutResultResult(window.setTimeout(streamToCanvas, timeoutDelay));
         },
         [bounds, onDraw, timeoutDelay, webcamVideo, shouldDraw, context],
     );
 
     useEffect(() => {
+        if (!bounds) {
+            return;
+        }
         if (!context && canvas) {
             const canvasContext = canvas?.getContext('2d');
             if (!canvasContext) {
@@ -107,6 +128,7 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
             }
         }
     }, [
+        bounds,
         canvas,
         webcamVideo,
         hasListener,

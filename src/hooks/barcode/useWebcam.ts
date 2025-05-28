@@ -29,9 +29,8 @@ export const useWebcam = (options: UseWebcamOptions = {}) => {
         if (!(hasPermission && webcamVideoRef.current)) {
             return;
         }
-
         setWebcamVideo(webcamVideoRef.current);
-    }, [hasPermission]);
+    }, [hasPermission, webcamVideoRef]);
 
     const { deviceList } = useGetDeviceList(hasPermission, onDevices);
 
@@ -40,9 +39,9 @@ export const useWebcam = (options: UseWebcamOptions = {}) => {
             { width: webcamVideo?.width ?? 640, height: webcamVideo?.height ?? 480 },
             deviceChoiceOptions ?? defaultDeviceChoiceOptions,
         );
-    }, [webcamVideo, deviceChoiceOptions]);
+    }, [hasPermission, webcamVideo, deviceChoiceOptions]);
 
-    const { stream } = useDeviceStream(hasPermission, deviceList, combinedDeviceChoiceOptions);
+    const { stream, trackSettings } = useDeviceStream(hasPermission, deviceList, combinedDeviceChoiceOptions);
     const { isStreaming } = useStreamToVideoElement(webcamVideo, stream, shouldPlay);
 
     return {
@@ -51,6 +50,7 @@ export const useWebcam = (options: UseWebcamOptions = {}) => {
         deviceList,
         hasPermission,
         stream,
+        trackSettings,
         isStreaming,
     };
 };
