@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { useBarcodeScanner } from '../../../hooks';
@@ -10,6 +10,8 @@ type CombinedHookStoriesProps = {
     canvasHeight?: number;
     videoWidth?: number;
     videoHeight?: number;
+    videoCropWidth?: number;
+    videoCropHeight?: number;
     zoom?: number;
 };
 
@@ -19,6 +21,8 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
         canvasHeight = 480,
         videoWidth = 640,
         videoHeight = 480,
+        videoCropWidth = 640,
+        videoCropHeight = 376,
         zoom = 1,
     } = props;
 
@@ -39,26 +43,33 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
         onScan,
     });
 
+    const containerRef = useRef<HTMLDivElement>();
+
+    useEffect(() => {
+        containerRef.current?.style.setProperty('--video-width', `${videoWidth}px`);
+        containerRef.current?.style.setProperty('--video-height', `${videoHeight}px`);
+        containerRef.current?.style.setProperty('--canvas-width', `${canvasWidth}px`);
+        containerRef.current?.style.setProperty('--canvas-height', `${canvasHeight}px`);
+        containerRef.current?.style.setProperty('--video-crop-width', `${videoCropWidth}px`);
+        containerRef.current?.style.setProperty('--video-crop-height', `${videoCropHeight}px`);
+    }, [containerRef.current]);
+
     return (
         <div>
             {hasPermission ? (
-                <div className={'scan-canvas-container'}>
-                    <div className={'scan-canvas-video'}>
-                        <video
-                            ref={webcamVideoRef}
-                            width={videoWidth}
-                            height={videoHeight}
-                            playsInline={true}
-                        />
-                    </div>
-                    <div className={'scan-canvas'}>
-                        <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
-                    </div>
-                    <div className={'scanned-codes'}>
-                        <textarea rows={10} cols={100} readOnly={true} value={codes.join('\n')} />
-                    </div>
+                <div ref={containerRef} className={'react-barcode-scanner-container'}>
+                    <video
+                        ref={webcamVideoRef}
+                        width={videoWidth}
+                        height={videoHeight}
+                        playsInline={true}
+                    />
+                    <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
                 </div>
             ) : null}
+            <div className={'scanned-codes'}>
+                <textarea rows={10} cols={100} readOnly={true} value={codes.join('\n')} />
+            </div>
         </div>
     );
 };
@@ -74,9 +85,11 @@ type Story = StoryObj<typeof CombinedHookStories>;
 export const Primary: Story = {
     args: {
         zoom: 2,
-        canvasWidth: 512,
-        canvasHeight: 384,
-        videoWidth: 640,
-        videoHeight: 480,
+        canvasWidth: 320,
+        canvasHeight: 240,
+        videoWidth: 480,
+        videoHeight: 376,
+        videoCropWidth: 480,
+        videoCropHeight: 240,
     },
 };

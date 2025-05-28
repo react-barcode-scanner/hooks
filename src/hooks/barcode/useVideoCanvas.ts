@@ -52,12 +52,14 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
         const centerY = webcamVideo.height / 2;
         const originX = centerX - centerX / effectiveZoom;
         const originY = centerY - centerY / effectiveZoom;
+        const sourceWidth = centerX + centerX / effectiveZoom;
+        const sourceHeight = centerY + centerY / effectiveZoom;
 
         return [
             originX,
             originY,
-            webcamVideo.width / effectiveZoom,
-            webcamVideo.height / effectiveZoom,
+            sourceWidth,
+            sourceHeight,
             0,
             0,
             canvas.width,
