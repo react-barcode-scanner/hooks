@@ -22,7 +22,7 @@ export const useWebcam = (options: UseWebcamOptions = {}) => {
 
     const { hasPermission } = useHasCameraPermission();
 
-    const webcamVideoRef = useRef<HTMLVideoElement>();
+    const webcamVideoRef = useRef<HTMLVideoElement>(null);
     const [webcamVideo, setWebcamVideo] = useState<HTMLVideoElement>();
 
     useEffect(() => {

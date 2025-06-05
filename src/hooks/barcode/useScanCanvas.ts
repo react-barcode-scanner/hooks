@@ -39,7 +39,7 @@ type UseScanCanvasOptions = {
 export const useScanCanvas = (options: UseScanCanvasOptions) => {
     const { hasPermission, onScan } = options;
 
-    const canvasRef = useRef<HTMLCanvasElement>();
+    const canvasRef = useRef<HTMLCanvasElement>(null);
     const [canvas, setCanvas] = useState<HTMLCanvasElement>();
 
     useEffect(() => {
