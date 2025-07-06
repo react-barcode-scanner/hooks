@@ -1,15 +1,25 @@
 import { DeviceChoiceOptions, useScanCanvas, useVideoCanvas, useWebcam } from './barcode';
+import { BarcodeDetectorOptions } from './types';
 
 export type UseBarcodeScannerOptions = {
     zoom?: number;
     onScan: (barcode: string) => void;
     onDevices?: (deviceList: MediaDeviceInfo[]) => void;
+    barcodeDetectorOptions?: BarcodeDetectorOptions;
     deviceChoiceOptions?: DeviceChoiceOptions;
     shouldPlay?: boolean;
 };
 
 export const useBarcodeScanner = (options: UseBarcodeScannerOptions) => {
-    const { zoom = 1, deviceChoiceOptions, onScan, onDevices, shouldPlay = true } = options;
+    const {
+        zoom = 1,
+        barcodeDetectorOptions,
+        deviceChoiceOptions,
+        onScan,
+        onDevices,
+        shouldPlay = true,
+    } = options;
+
     const {
         webcamVideo,
         webcamVideoRef,
@@ -22,6 +32,7 @@ export const useBarcodeScanner = (options: UseBarcodeScannerOptions) => {
         onDevices,
     });
     const { onDraw, canDetect, canvas, canvasRef, detectedBarcodesRef } = useScanCanvas({
+        barcodeDetectorOptions,
         hasPermission,
         onScan,
     });

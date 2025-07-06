@@ -28,6 +28,7 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
 
     const [codes, setCodes] = useState<string[]>([]);
     const [devices, setDevices] = useState<any[]>([]);
+    void devices;
 
     const onScan = (code: string) => {
         setCodes(codes.concat(code));
@@ -43,7 +44,7 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
         onScan,
     });
 
-    const containerRef = useRef<HTMLDivElement>();
+    const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         containerRef.current?.style.setProperty('--video-width', `${videoWidth}px`);
@@ -84,7 +85,7 @@ type Story = StoryObj<typeof CombinedHookStories>;
 
 export const Primary: Story = {
     args: {
-        zoom: 2,
+        zoom: 1,
         canvasWidth: 320,
         canvasHeight: 240,
         videoWidth: 320,

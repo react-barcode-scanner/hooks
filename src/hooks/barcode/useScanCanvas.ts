@@ -9,14 +9,14 @@ declare let window: Window &
 type DetectedBarcodes = Map<string, ImageBitmap>;
 
 let barcodeDetector: BarcodeDetector;
-const barcodeDetectorOptions = { formats: [BarcodeFormat.EAN_13, BarcodeFormat.UPC_A] };
+const defaultBarcodeDetectorOptions = { useNative: false, formats: [BarcodeFormat.EAN_13, BarcodeFormat.UPC_A] };
 
 const getBarcodeDetector = async (options: BarcodeDetectorOptions) => {
     if (barcodeDetector) {
         return barcodeDetector;
     }
-    const hasNative = 'BarcodeDetector' in window;
-    if (!hasNative) {
+    const useNative = options.useNative && 'BarcodeDetector' in window;
+    if (!useNative) {
         await import('@undecaf/barcode-detector-polyfill').then(BCD => {
             const { BarcodeDetectorPolyfill } = BCD;
             window.BarcodeDetector = BarcodeDetectorPolyfill as unknown as BarcodeDetector;
@@ -34,10 +34,11 @@ const getBarcodeDetector = async (options: BarcodeDetectorOptions) => {
 type UseScanCanvasOptions = {
     hasPermission: boolean;
     onScan?: (code: string) => void;
+    barcodeDetectorOptions?: BarcodeDetectorOptions;
 };
 
 export const useScanCanvas = (options: UseScanCanvasOptions) => {
-    const { hasPermission, onScan } = options;
+    const { hasPermission, onScan, barcodeDetectorOptions = defaultBarcodeDetectorOptions } = options;
 
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [canvas, setCanvas] = useState<HTMLCanvasElement>();

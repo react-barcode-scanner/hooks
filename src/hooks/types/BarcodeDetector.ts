@@ -26,6 +26,7 @@ export type DetectedBarcode = {
 };
 
 export type BarcodeDetectorOptions = {
+    useNative?: boolean;
     formats?: BarcodeFormat[];
 };
 
