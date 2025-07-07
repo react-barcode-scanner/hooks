@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 type DrawImageBounds = [number, number, number, number, number, number, number, number];
 
 export type UseVideoCanvasOptions = {
-    onDraw?: () => void;
+    onDraw?: (video?: HTMLVideoElement) => void;
     onPlay?: () => void;
     webcamVideo?: HTMLVideoElement;
     trackSettings?: MediaTrackSettings;
@@ -72,7 +72,7 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
         ];
     }, [canvas, webcamVideo, trackSettings, zoom]);
 
-    const [timeoutResult, setTimeoutResultResult] = useState<number>();
+    const [rafRequestId, setRAFRequestId] = useState<number>();
 
     const streamToCanvas = useMemo(
         () => () => {
@@ -82,22 +82,22 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
             if (!(
                 context && webcamVideo
             )) {
-                if (timeoutResult) {
-                    clearTimeout(timeoutResult);
+                if (rafRequestId) {
+                    cancelAnimationFrame(rafRequestId);
                 }
-                setTimeoutResultResult(window.setTimeout(streamToCanvas, timeoutDelay));
+                setRAFRequestId(requestAnimationFrame(streamToCanvas));
                 return;
             }
 
             context.drawImage(webcamVideo, ...bounds);
             if (shouldDraw) {
-                onDraw?.();
+                onDraw?.(webcamVideo);
             }
 
-            if (timeoutResult) {
-                clearTimeout(timeoutResult);
+            if (rafRequestId) {
+                cancelAnimationFrame(rafRequestId);
             }
-            setTimeoutResultResult(window.setTimeout(streamToCanvas, timeoutDelay));
+            setRAFRequestId(requestAnimationFrame(streamToCanvas));
         },
         [bounds, onDraw, timeoutDelay, webcamVideo, shouldDraw, context],
     );
@@ -107,11 +107,10 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
             return;
         }
         if (!context && canvas) {
-            const canvasContext = canvas?.getContext('2d');
+            const canvasContext = canvas?.getContext('2d', { willReadFrequently: true });
             if (!canvasContext) {
                 return;
             }
-            canvasContext.filter = 'grayscale(1) contrast(1)';
             setContext(canvasContext);
             return;
         }

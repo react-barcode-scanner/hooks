@@ -6,7 +6,7 @@ declare let window: Window &
         BarcodeDetector: BarcodeDetector;
     };
 
-type DetectedBarcodes = Map<string, ImageBitmap>;
+type DetectedBarcodes = string[];
 
 let barcodeDetector: BarcodeDetector;
 const defaultBarcodeDetectorOptions = { useNative: false, formats: [BarcodeFormat.EAN_13, BarcodeFormat.UPC_A] };
@@ -50,13 +50,14 @@ export const useScanCanvas = (options: UseScanCanvasOptions) => {
         setCanvas(canvasRef.current);
     }, [hasPermission]);
 
-    const detectedBarcodesRef = useRef<DetectedBarcodes>(new Map());
+    const detectedBarcodesRef = useRef<DetectedBarcodes>([]);
     const [canDetect, setCanDetect] = useState<boolean>(true);
 
-    const onDraw = async () => {
+    const onDraw = async (video?: HTMLVideoElement) => {
         if (!(canvas && canDetect)) {
             return undefined;
         }
+
         try {
             const barcodeDetector = await getBarcodeDetector(barcodeDetectorOptions);
 
@@ -64,30 +65,34 @@ export const useScanCanvas = (options: UseScanCanvasOptions) => {
                 return undefined;
             }
 
-            const bitmap = await createImageBitmap(canvas);
+            const detectionSource = video ?? await createImageBitmap(canvas);
             const detectedBarcodes = detectedBarcodesRef.current;
 
             try {
-                const barcodes = await barcodeDetector?.detect(bitmap);
+                const barcodes = await barcodeDetector?.detect(detectionSource);
 
                 if (
                     barcodes.length > 0 &&
-                    barcodes.filter((code: DetectedBarcode) => !detectedBarcodes.has(code.rawValue))
+                    barcodes.filter((code: DetectedBarcode) => !detectedBarcodes.includes(code.rawValue))
                         .length > 0
                 ) {
                     barcodes.forEach((barcode: DetectedBarcode) => {
-                        if (detectedBarcodes.has(barcode.rawValue)) {
+                        if (detectedBarcodes.includes(barcode.rawValue)) {
                             return;
                         }
-                        detectedBarcodes.set(barcode.rawValue, bitmap);
+                        detectedBarcodes.push(barcode.rawValue);
                         onScan?.(barcode.rawValue);
                     });
                 }
             } catch (error) {
                 console.log('unable to detect', error);
+            } finally {
+                if (detectionSource instanceof ImageBitmap) {
+                    detectionSource.close();
+                }
             }
         } catch (error) {
-            console.error('setting can detect to false');
+            console.error('setting can detect to false', error);
             setCanDetect(false);
         }
     };
