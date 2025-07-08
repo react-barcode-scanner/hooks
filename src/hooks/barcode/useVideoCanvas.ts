@@ -26,11 +26,6 @@ const playWithRetry = async (videoElement: HTMLVideoElement): Promise<any> => {
     }
 };
 
-const delayExecution = (callback: () => void) => {
-    // return requestAnimationFrame(callback);
-    return window.setTimeout(callback, 10);
-};
-
 const cancelDelayedExecution = (id: number) => {
     // cancelAnimationFrame(id);
     window.clearTimeout(id);
@@ -49,6 +44,11 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
         timeoutDelay = 17,
         zoom = 1,
     } = options;
+
+    const delayExecution = (callback: () => void) => {
+        // return requestAnimationFrame(callback);
+        return window.setTimeout(callback, timeoutDelay);
+    };
 
     const [context, setContext] = useState<CanvasRenderingContext2D | null>();
     const [hasListener, setHasListener] = useState<boolean>(false);
