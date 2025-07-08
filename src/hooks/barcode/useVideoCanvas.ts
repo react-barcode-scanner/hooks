@@ -26,6 +26,16 @@ const playWithRetry = async (videoElement: HTMLVideoElement): Promise<any> => {
     }
 };
 
+const delayExecution = (callback: () => void) => {
+    // return requestAnimationFrame(callback);
+    return window.setTimeout(callback, 10);
+};
+
+const cancelDelayedExecution = (id: number) => {
+    // cancelAnimationFrame(id);
+    window.clearTimeout(id);
+}
+
 export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
     const {
         onDraw,
@@ -72,7 +82,7 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
         ];
     }, [canvas, webcamVideo, trackSettings, zoom]);
 
-    const [rafRequestId, setRAFRequestId] = useState<number>();
+    const [delayId, setDelayId] = useState<number>();
 
     const streamToCanvas = useMemo(
         () => () => {
@@ -82,10 +92,10 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
             if (!(
                 context && webcamVideo
             )) {
-                if (rafRequestId) {
-                    cancelAnimationFrame(rafRequestId);
+                if (delayId) {
+                    cancelDelayedExecution(delayId);
                 }
-                setRAFRequestId(requestAnimationFrame(streamToCanvas));
+                setDelayId(delayExecution(streamToCanvas));
                 return;
             }
 
@@ -94,10 +104,10 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
                 onDraw?.(webcamVideo);
             }
 
-            if (rafRequestId) {
-                cancelAnimationFrame(rafRequestId);
+            if (delayId) {
+                cancelDelayedExecution(delayId);
             }
-            setRAFRequestId(requestAnimationFrame(streamToCanvas));
+            setDelayId(delayExecution(streamToCanvas));
         },
         [bounds, onDraw, timeoutDelay, webcamVideo, shouldDraw, context],
     );
