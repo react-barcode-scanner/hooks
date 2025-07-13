@@ -46,13 +46,13 @@
     initial-value: 640px;
 }
 
-@property --canvas-element-width {
+@property --canvas-width {
     syntax: "<length>";
     inherits: true;
     initial-value: 320px;
 }
 
-@property --canvas-element-height {
+@property --canvas-height {
     syntax: "<length>";
     inherits: true;
     initial-value: 240px;
@@ -70,11 +70,11 @@
     );
 
     --canvas-element-left: calc(
-            (var(--video-crop-width) - var(--canvas-element-width)) / var(--zoom) -
+            (var(--video-crop-width) - var(--canvas-width)) / var(--zoom) -
             var(--video-blur)
     );
     --canvas-element-top: calc(
-            (var(--video-crop-height) - var(--canvas-element-height)) / var(--zoom) -
+            (var(--video-crop-height) - var(--canvas-height)) / var(--zoom) -
             var(--video-blur)
     );
 
@@ -91,8 +91,8 @@
     position: absolute;
     left: var(--canvas-element-left);
     top: var(--canvas-element-top);
-    width: var(--canvas-element-width);
-    height: var(--canvas-element-height);
+    width: var(--canvas-width);
+    height: var(--canvas-height);
 }
 
 .react-barcode-scanner-container > video {
@@ -106,7 +106,7 @@
     position: absolute;
     left: var(--canvas-element-left);
     top: var(--canvas-element-top);
-    width: var(--canvas-element-width);
+    width: var(--canvas-width);
     height: 1px;
     overflow: hidden;
 
@@ -123,6 +123,6 @@
         top: var(--canvas-element-top);
     }
     to {
-        top: calc(var(--canvas-element-top) + var(--canvas-element-height));
+        top: calc(var(--canvas-element-top) + var(--canvas-height));
     }
 }

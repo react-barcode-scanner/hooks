@@ -53,7 +53,15 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
         containerRef.current?.style.setProperty('--canvas-height', `${canvasHeight}px`);
         containerRef.current?.style.setProperty('--video-crop-width', `${videoCropWidth}px`);
         containerRef.current?.style.setProperty('--video-crop-height', `${videoCropHeight}px`);
-    }, [containerRef.current]);
+    }, [
+        containerRef.current,
+        videoWidth,
+        videoHeight,
+        canvasWidth,
+        canvasHeight,
+        videoCropWidth,
+        videoCropHeight
+    ]);
 
     return (
         <div>
@@ -64,8 +72,9 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
                         width={videoWidth}
                         height={videoHeight}
                         playsInline={true}
+                        data-zoom={zoom}
                     />
-                    <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
+                    <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} data-zoom={zoom} />
                 </div>
             ) : null}
             <div className={'scanned-codes'}>

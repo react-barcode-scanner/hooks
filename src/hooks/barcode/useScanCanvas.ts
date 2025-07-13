@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { BarcodeDetector, BarcodeDetectorOptions, BarcodeFormat, DetectedBarcode } from '../types';
 
 declare let window: Window &
@@ -53,7 +53,7 @@ export const useScanCanvas = (options: UseScanCanvasOptions) => {
     const detectedBarcodesRef = useRef<DetectedBarcodes>([]);
     const [canDetect, setCanDetect] = useState<boolean>(true);
 
-    const onDraw = async (video?: HTMLVideoElement) => {
+    const onDraw = useCallback(async (video?: HTMLVideoElement) => {
         if (!(canvas && canDetect)) {
             return undefined;
         }
@@ -95,7 +95,7 @@ export const useScanCanvas = (options: UseScanCanvasOptions) => {
             console.error('setting can detect to false', error);
             setCanDetect(false);
         }
-    };
+    }, [canvas]);
 
     return { onDraw, canDetect, canvas, canvasRef, detectedBarcodesRef };
 };
