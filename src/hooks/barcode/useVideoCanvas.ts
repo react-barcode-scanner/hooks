@@ -27,11 +27,6 @@ const playWithRetry = async (videoElement: HTMLVideoElement): Promise<any> => {
     }
 };
 
-const cancelDelayedExecution = (id: number) => {
-    // cancelAnimationFrame(id);
-    window.clearTimeout(id);
-}
-
 export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
     const {
         onDraw,
@@ -46,25 +41,35 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
         zoom = 1,
     } = options;
 
-    const delayExecution = (callback: () => void) => {
-        // return requestAnimationFrame(callback);
-        return window.setTimeout(callback, timeoutDelay);
-    };
-
     const [context, setContext] = useState<CanvasRenderingContext2D | null>();
     const [hasListener, setHasListener] = useState<boolean>(false);
+    const [intervalIds, setIntervalIds] = useState<number[]>([]);
 
-    const [delayId, setDelayId] = useState<number>();
+    const addIntervalId = (intervalId: number) =>
+        setIntervalIds([...intervalIds, intervalId]);
 
     useEffect(() => {
         setContext(null);
     }, [
         zoom,
+        // webcamVideo?.srcObject,
         webcamVideo?.width,
         webcamVideo?.height,
         canvas?.width,
         canvas?.height,
     ]);
+
+    useEffect(() => {
+        if (!context && canvas) {
+            setHasListener(false);
+            const canvasContext = canvas?.getContext('2d', { willReadFrequently: true });
+            if (!canvasContext) {
+                return;
+            }
+            setContext(canvasContext);
+            return;
+        }
+    }, [context, canvas]);
 
     const bounds: DrawImageBounds | undefined = useMemo(() => {
         if (!(webcamVideo && trackSettings && canvas)) {
@@ -111,13 +116,6 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
                 if (shouldDraw) {
                     onDraw?.(webcamVideo);
                 }
-
-                if (delayId) {
-                    cancelDelayedExecution(delayId);
-                }
-                if (context) {
-                    setDelayId(delayExecution(streamToCanvas));
-                }
             };
 
             return streamToCanvas;
@@ -129,36 +127,23 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
         if (!bounds) {
             return;
         }
-        if (!context && canvas) {
-            if (webcamVideo) {
-                webcamVideo.removeEventListener('play', streamToCanvas);
+        if (hasPermission && context && webcamVideo && !hasListener) {
+            webcamVideo.addEventListener('play', () => {
+                intervalIds.forEach(window.clearInterval);
+                streamToCanvas();
+                addIntervalId(window.setInterval(streamToCanvas, timeoutDelay));
+            }, { once: true });
+            if (shouldPlay) {
+                playWithRetry(webcamVideo).then(onPlay);
             }
-            setHasListener(false);
-            const canvasContext = canvas?.getContext('2d', { willReadFrequently: true });
-            if (!canvasContext) {
-                return;
-            }
-            setContext(canvasContext);
-            return;
-        }
-
-        if (hasPermission && context && webcamVideo) {
-            if (!hasListener) {
-                webcamVideo.addEventListener('play', streamToCanvas);
-                if (shouldPlay) {
-                    playWithRetry(webcamVideo).then(onPlay);
-                }
-                setHasListener(true);
-            }
+            setHasListener(true);
         }
     }, [
         bounds,
         canvas,
         webcamVideo,
-        hasListener,
         onPlay,
         shouldPlay,
-        streamToCanvas,
         hasPermission,
         context,
     ]);

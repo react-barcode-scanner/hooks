@@ -24,7 +24,6 @@ export const useBarcodeScanner = (options: UseBarcodeScannerOptions) => {
         webcamVideo,
         webcamVideoRef,
         hasPermission,
-        isStreaming,
         stream,
         trackSettings,
     } = useWebcam({
@@ -54,6 +53,5 @@ export const useBarcodeScanner = (options: UseBarcodeScannerOptions) => {
         stream,
         detectedBarcodes: detectedBarcodesRef.current,
         hasPermission,
-        isStreaming,
     };
 };

@@ -17,9 +17,6 @@ export const useDeviceStream = (
     const [trackSettings, setTrackSettings] = useState<MediaTrackSettings>();
 
     const setStreamAndSettings = (stream: MediaStream) => {
-        if (!stream) {
-            return;
-        }
         setStream(stream);
         setTrackSettings(stream.getVideoTracks()?.[0].getSettings());
     };
