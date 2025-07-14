@@ -41,9 +41,6 @@ export const useWebcam = (options: UseWebcamOptions = {}) => {
     }, [hasPermission, webcamVideo, deviceChoiceOptions]);
 
     const { stream, trackSettings } = useDeviceStream(hasPermission, deviceList, combinedDeviceChoiceOptions);
-    if (trackSettings) {
-        window.alert(JSON.stringify(trackSettings, undefined, 2));
-    }
     useStreamToVideoElement(webcamVideo, stream);
 
     return {
