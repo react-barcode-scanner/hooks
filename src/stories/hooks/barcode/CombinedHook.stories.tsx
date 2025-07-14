@@ -72,9 +72,8 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
                         width={videoWidth}
                         height={videoHeight}
                         playsInline={true}
-                        data-zoom={zoom}
                     />
-                    <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} data-zoom={zoom} />
+                    <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
                 </div>
             ) : null}
             <div className={'scanned-codes'}>
@@ -95,11 +94,11 @@ type Story = StoryObj<typeof CombinedHookStories>;
 export const Primary: Story = {
     args: {
         zoom: 1,
-        canvasWidth: 320,
-        canvasHeight: 240,
-        videoWidth: 320,
-        videoHeight: 240,
-        videoCropWidth: 320,
-        videoCropHeight: 240,
+        canvasWidth: 480,
+        canvasHeight: 376,
+        videoWidth: 480,
+        videoHeight: 376,
+        videoCropWidth: 288,
+        videoCropHeight: 188,
     },
 };

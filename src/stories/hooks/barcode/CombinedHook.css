@@ -22,12 +22,6 @@
     initial-value: 480px;
 }
 
-@property --zoom {
-    syntax: "<number>";
-    inherits: true;
-    initial-value: 2;
-}
-
 @property --video-blur {
     syntax: "<length>";
     inherits: true;
@@ -70,11 +64,11 @@
     );
 
     --canvas-element-left: calc(
-            (var(--video-crop-width) - var(--canvas-width)) / var(--zoom) -
+            (var(--video-crop-width) - var(--canvas-width)) / 2 -
             var(--video-blur)
     );
     --canvas-element-top: calc(
-            (var(--video-crop-height) - var(--canvas-height)) / var(--zoom) -
+            (var(--video-crop-height) - var(--canvas-height)) / 2 -
             var(--video-blur)
     );
 
