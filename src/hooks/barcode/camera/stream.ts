@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
 export type DeviceChoiceOptions = {
-    matcher?: RegExp;
+    matchers?: RegExp[];
     deviceId?: string;
     facingMode?: 'user' | 'environment';
     width?: number;
@@ -77,29 +77,33 @@ const getMediaConstraintsForDeviceChoiceOptions = (
 
     let advancedConstraints: MediaTrackConstraintSet[] = [];
     let { deviceId } = deviceChoiceOptions;
-    const { matcher, facingMode, width, height } = deviceChoiceOptions;
+    const { matchers, facingMode, width, height } = deviceChoiceOptions;
 
     constraints.video = { width, height };
 
     if (deviceId) {
         advancedConstraints.push({ deviceId });
     }
-    if (!deviceId && matcher) {
-        const matched = deviceList.filter(deviceInfo => {
-            return matcher.test(deviceInfo.label);
-        });
-        if (matched.length === 1) {
-            advancedConstraints.push({ deviceId: matched[0].deviceId });
-        }
-        if (matched.length > 1 && facingMode) {
-            advancedConstraints = advancedConstraints.concat(
-                matched.map(matchingDevice => {
-                    return { deviceId: matchingDevice.deviceId, facingMode };
-                }),
-            );
+    if (!deviceId && matchers?.length) {
+        for (const matcher of matchers) {
+            const matched = deviceList.filter(deviceInfo => {
+                return matcher.test(deviceInfo.label);
+            });
+            if (matched.length === 1) {
+                advancedConstraints.push({ deviceId: matched[0].deviceId });
+                break;
+            }
+            if (matched.length > 1 && facingMode) {
+                advancedConstraints = advancedConstraints.concat(
+                    matched.map(matchingDevice => {
+                        return { deviceId: matchingDevice.deviceId, facingMode };
+                    }),
+                );
+                break;
+            }
         }
     }
-    if (!(deviceId || matcher) && facingMode) {
+    if (!(deviceId || matchers?.length) && facingMode) {
         advancedConstraints.push({ facingMode });
     }
 

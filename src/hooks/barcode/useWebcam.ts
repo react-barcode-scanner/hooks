@@ -7,7 +7,7 @@ import {
 } from './camera';
 
 const defaultDeviceChoiceOptions: DeviceChoiceOptions = {
-    matcher: /back/i,
+    matchers: [/back ultra/i, /back/i],
     facingMode: 'environment',
 };
 
