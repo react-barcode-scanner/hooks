@@ -77,9 +77,9 @@ const getMediaConstraintsForDeviceChoiceOptions = (
 
     let advancedConstraints: MediaTrackConstraintSet[] = [];
     let { deviceId } = deviceChoiceOptions;
-    const { matchers, facingMode, width, height } = deviceChoiceOptions;
+    const { matchers, facingMode = 'environment', width, height } = deviceChoiceOptions;
 
-    constraints.video = { width, height };
+    constraints.video = { width, height, facingMode };
 
     if (deviceId) {
         advancedConstraints.push({ deviceId });
