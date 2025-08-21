@@ -39,9 +39,10 @@ export const canGetUserMedia = async (): Promise<boolean> => {
 };
 
 const getHasDeviceLabels = async (): Promise<boolean> => {
-    const mediaDeviceInfos = await navigator.mediaDevices?.enumerateDevices?.();
+    const mediaDeviceInfos = await navigator.mediaDevices?.getUserMedia({ video: true })
+        .then(() => navigator.mediaDevices?.enumerateDevices?.());
     return !!mediaDeviceInfos?.find((mediaDeviceInfo: MediaDeviceInfo) => {
-        return mediaDeviceInfo.deviceId?.length > 0;
+        return mediaDeviceInfo.label?.length > 0;
     });
 };
 
