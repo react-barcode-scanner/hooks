@@ -41,7 +41,7 @@ export const useDeviceStream = (
                 .catch(error => {
                     console.log(`requested device not available`, error);
                     return getUserMedia(
-                        { video: { advanced: [{ facingMode: 'environment' }] } },
+                        { video: { facingMode: 'environment' } },
                         'useDeviceStream #2',
                     )
                         .then(setStream)
@@ -90,7 +90,8 @@ const getMediaConstraintsForDeviceChoiceOptions = (
                 return matcher.test(deviceInfo.label);
             });
             if (matched.length === 1) {
-                advancedConstraints.push({ deviceId: matched[0].deviceId });
+                // advancedConstraints.push({ deviceId: matched[0].deviceId });
+                constraints.video.deviceId = matched[0].deviceId;
                 break;
             }
             if (matched.length > 1 && facingMode) {
@@ -110,6 +111,9 @@ const getMediaConstraintsForDeviceChoiceOptions = (
     if (advancedConstraints.length > 0) {
         constraints.video = { width, height, advanced: advancedConstraints };
     }
+
+    console.log('deviceList', deviceList);
+    console.log('deviceConstraints', constraints);
 
     return constraints;
 };

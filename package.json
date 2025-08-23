@@ -6,7 +6,7 @@
         "directory": "packages/@react-barcode-scanner/hooks"
     },
     "license": "MIT",
-    "version": "0.0.48-alpha",
+    "version": "0.0.59",
     "private": false,
     "main": "dist/index.js",
     "module": "dist/esm/index.js",
@@ -16,7 +16,7 @@
     ],
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@undecaf/barcode-detector-polyfill": "^0.9.13"
+        "@undecaf/barcode-detector-polyfill": "0.9.13"
     },
     "scripts": {
         "storybook": "storybook dev -p 6006 --https --ssl-cert ./scripts/localhost.crt --ssl-key ./scripts/localhost.key",
