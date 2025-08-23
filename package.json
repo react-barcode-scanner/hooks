@@ -6,7 +6,7 @@
         "directory": "packages/@react-barcode-scanner/hooks"
     },
     "license": "MIT",
-    "version": "0.0.59",
+    "version": "0.0.60",
     "private": false,
     "main": "dist/index.js",
     "module": "dist/esm/index.js",
@@ -63,6 +63,7 @@
         "@babel/plugin-syntax-flow": "7.26.0",
         "@babel/plugin-transform-react-jsx": "7.25.9",
         "@babel/plugin-transform-runtime": "7.26.10",
+        "@babel/preset-env": "^7.28.3",
         "@chromatic-com/storybook": "^3",
         "@rollup/plugin-commonjs": "^28.0.3",
         "@rollup/plugin-node-resolve": "^16.0.0",
