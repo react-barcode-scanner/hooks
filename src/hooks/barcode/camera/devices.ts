@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { getUserMediaConstraints } from './constants';
 
 export const useGetDeviceList = (
     onDevices?: (deviceList: MediaDeviceInfo[]) => void,
@@ -31,7 +30,11 @@ const listDevices = async (): Promise<MediaDeviceInfo[]> => {
     try {
         console.log('hasMediaDevices', !!navigator.mediaDevices);
 
-        const devices = await navigator.mediaDevices?.getUserMedia(getUserMediaConstraints)
+        const devices = await navigator.mediaDevices?.getUserMedia(
+                {
+                    video: { facingMode: 'environment' }
+                }
+            )
             .then(async () => {
                 const devices = await navigator.mediaDevices?.enumerateDevices?.();
                 console.log('devices', devices);

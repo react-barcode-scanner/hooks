@@ -1,5 +1,5 @@
 export const getUserMediaConstraints = {
-    video: { advanced: [{ facingMode: 'environment' }] }
+    video: { facingMode: 'environment' }
 };
 
 export const environmentCameraRegEx: RegExp = new RegExp([
