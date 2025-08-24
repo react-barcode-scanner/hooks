@@ -39,7 +39,7 @@ export const useDeviceStream = (
                     setStreamAndSettings(stream)
                 })
                 .catch(error => {
-                    console.log(`requested device not available`, error);
+                    console.log(`requested device not available`, constraints, error);
                     return getUserMedia(
                         { video: { facingMode: 'environment' } },
                         'useDeviceStream #2',
@@ -111,9 +111,6 @@ const getMediaConstraintsForDeviceChoiceOptions = (
     if (advancedConstraints.length > 0) {
         constraints.video = { width, height, advanced: advancedConstraints };
     }
-
-    console.log('deviceList', deviceList);
-    console.log('deviceConstraints', constraints);
 
     return constraints;
 };

@@ -28,19 +28,14 @@ export const useGetDeviceList = (
 
 const listDevices = async (): Promise<MediaDeviceInfo[]> => {
     try {
-        console.log('hasMediaDevices', !!navigator.mediaDevices);
-
         const devices = await navigator.mediaDevices?.getUserMedia(
                 {
                     video: { facingMode: 'environment' }
                 }
             )
             .then(async () => {
-                const devices = await navigator.mediaDevices?.enumerateDevices?.();
-                console.log('devices', devices);
-                return devices;
+                return await navigator.mediaDevices?.enumerateDevices?.();
             });
-        console.log('devices/2', devices);
         return devices?.filter(device => device.kind === 'videoinput') ?? [];
     } catch (e) {
         if ((e as Object).toString().includes('videoinput failed')) {
