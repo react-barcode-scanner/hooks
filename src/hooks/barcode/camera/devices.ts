@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { getUserMediaConstraints } from './constants';
-import { removeStreamTracks } from './stream';
 
 export const useGetDeviceList = (
     onDevices?: (deviceList: MediaDeviceInfo[]) => void,
@@ -30,16 +29,21 @@ export const useGetDeviceList = (
 
 const listDevices = async (): Promise<MediaDeviceInfo[]> => {
     try {
+        console.log('hasMediaDevices', !!navigator.mediaDevices);
+
         const devices = await navigator.mediaDevices?.getUserMedia(getUserMediaConstraints)
-            .then(async (stream) => {
+            .then(async () => {
                 const devices = await navigator.mediaDevices?.enumerateDevices?.();
-                removeStreamTracks(stream);
+                console.log('devices', devices);
                 return devices;
             });
+        console.log('devices/2', devices);
         return devices?.filter(device => device.kind === 'videoinput') ?? [];
     } catch (e) {
         if ((e as Object).toString().includes('videoinput failed')) {
             window.alert(`You may have more than one application or window using your camera.`);
+        } else {
+            console.log(e);
         }
         return [];
     }

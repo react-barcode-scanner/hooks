@@ -7,7 +7,7 @@ import {
 import { environmentCameraRegEx } from './camera/constants';
 
 const defaultDeviceChoiceOptions: DeviceChoiceOptions = {
-    matchers: [/ultra/i, environmentCameraRegEx],
+    matchers: [/ultra/i, /back/i],
 };
 
 export type UseWebcamOptions = {
