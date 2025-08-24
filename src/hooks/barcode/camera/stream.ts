@@ -44,7 +44,7 @@ export const useDeviceStream = (
                         { video: { facingMode: 'environment' } },
                         'useDeviceStream #2',
                     )
-                        .then(setStream)
+                        .then(setStreamAndSettings)
                         .catch(error => {
                             console.log('no environment-facing camera available', error);
                             return getUserMedia({ video: true }, 'useDeviceStream #3')
@@ -77,9 +77,9 @@ const getMediaConstraintsForDeviceChoiceOptions = (
 
     let advancedConstraints: MediaTrackConstraintSet[] = [];
     let { deviceId } = deviceChoiceOptions;
-    const { matchers, facingMode = 'environment', width, height } = deviceChoiceOptions;
+    const { matchers, facingMode, width, height } = deviceChoiceOptions;
 
-    constraints.video = { width, height, facingMode };
+    constraints.video = { width, height };
 
     if (deviceId) {
         advancedConstraints.push({ deviceId });
@@ -94,10 +94,10 @@ const getMediaConstraintsForDeviceChoiceOptions = (
                 constraints.video.deviceId = matched[0].deviceId;
                 break;
             }
-            if (matched.length > 1 && facingMode) {
+            if (matched.length > 1) {
                 advancedConstraints = advancedConstraints.concat(
                     matched.map(matchingDevice => {
-                        return { deviceId: matchingDevice.deviceId, facingMode };
+                        return { deviceId: matchingDevice.deviceId };
                     }),
                 );
                 break;

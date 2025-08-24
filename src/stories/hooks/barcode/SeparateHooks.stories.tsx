@@ -27,7 +27,7 @@ const SeparateHooksStories = (props: SeparateHooksProps) => {
         setCodes(codes.concat(code));
     };
 
-    const { webcamVideo, webcamVideoRef, hasPermission } = useWebcam({ shouldPlay: true });
+    const { webcamVideo, webcamVideoRef, hasPermission } = useWebcam({});
     const { onDraw, canDetect, canvas, canvasRef } = useScanCanvas({ hasPermission, onScan });
 
     useVideoCanvas({

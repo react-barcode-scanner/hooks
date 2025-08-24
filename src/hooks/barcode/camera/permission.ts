@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { getUserMediaConstraints } from './constants';
 import { getUserMedia, removeStreamTracks } from './stream';
 
 export const useHasCameraPermission = () => {
@@ -39,8 +40,12 @@ export const canGetUserMedia = async (): Promise<boolean> => {
 };
 
 const getHasDeviceLabels = async (): Promise<boolean> => {
-    const mediaDeviceInfos = await navigator.mediaDevices?.getUserMedia({ video: true })
-        .then(() => navigator.mediaDevices?.enumerateDevices?.());
+    const mediaDeviceInfos = await navigator.mediaDevices?.getUserMedia(getUserMediaConstraints)
+        .then(stream => {
+            const devices = navigator.mediaDevices?.enumerateDevices?.();
+            removeStreamTracks(stream);
+            return devices;
+        });
     return !!mediaDeviceInfos?.find((mediaDeviceInfo: MediaDeviceInfo) => {
         return mediaDeviceInfo.label?.length > 0;
     });

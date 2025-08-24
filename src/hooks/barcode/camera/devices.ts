@@ -1,34 +1,46 @@
 import { useEffect, useState } from 'react';
+import { getUserMediaConstraints } from './constants';
+import { removeStreamTracks } from './stream';
 
 export const useGetDeviceList = (
-    hasPermission: boolean,
     onDevices?: (deviceList: MediaDeviceInfo[]) => void,
-): { deviceList: MediaDeviceInfo[] } => {
+): { deviceList: MediaDeviceInfo[], hasPermission: boolean } => {
     const [deviceList, setDeviceList] = useState<MediaDeviceInfo[]>([]);
+    const [hasPermission, setHasPermission] = useState<boolean>(false);
 
     useEffect(() => {
         let active = true;
 
-        if (hasPermission) {
-            listDevices().then((deviceList: MediaDeviceInfo[]) => {
-                if (!active) {
-                    return;
-                }
-                setDeviceList(deviceList);
-                onDevices?.(deviceList);
-            });
-        }
+        listDevices().then((deviceList: MediaDeviceInfo[]) => {
+            if (!active) {
+                return;
+            }
+            setHasPermission(!!deviceList?.length);
+            setDeviceList(deviceList);
+            onDevices?.(deviceList);
+        });
 
         return () => {
             active = false;
         };
-    }, [hasPermission]);
+    }, []);
 
-    return { deviceList };
+    return { deviceList, hasPermission };
 };
 
 const listDevices = async (): Promise<MediaDeviceInfo[]> => {
-    const devices = await navigator.mediaDevices?.getUserMedia({ video: true })
-        .then(() => navigator.mediaDevices?.enumerateDevices?.());
-    return devices?.filter(device => device.kind === 'videoinput') ?? [];
+    try {
+        const devices = await navigator.mediaDevices?.getUserMedia(getUserMediaConstraints)
+            .then(async (stream) => {
+                const devices = await navigator.mediaDevices?.enumerateDevices?.();
+                removeStreamTracks(stream);
+                return devices;
+            });
+        return devices?.filter(device => device.kind === 'videoinput') ?? [];
+    } catch (e) {
+        if ((e as Object).toString().includes('videoinput failed')) {
+            window.alert(`You may have more than one application or window using your camera.`);
+        }
+        return [];
+    }
 };

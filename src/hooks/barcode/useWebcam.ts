@@ -3,12 +3,11 @@ import {
     DeviceChoiceOptions,
     useDeviceStream,
     useGetDeviceList,
-    useHasCameraPermission,
 } from './camera';
+import { environmentCameraRegEx } from './camera/constants';
 
 const defaultDeviceChoiceOptions: DeviceChoiceOptions = {
-    matchers: [/ultra/i, /back/i],
-    facingMode: 'environment',
+    matchers: [/ultra/i, environmentCameraRegEx],
 };
 
 export type UseWebcamOptions = {
@@ -18,11 +17,10 @@ export type UseWebcamOptions = {
 
 export const useWebcam = (options: UseWebcamOptions = {}) => {
     const { deviceChoiceOptions, onDevices } = options;
-
-    const { hasPermission } = useHasCameraPermission();
-
     const webcamVideoRef = useRef<HTMLVideoElement>(null);
     const [webcamVideo, setWebcamVideo] = useState<HTMLVideoElement>();
+
+    const { deviceList, hasPermission } = useGetDeviceList(onDevices);
 
     useEffect(() => {
         if (!(hasPermission && webcamVideoRef.current)) {
@@ -30,8 +28,6 @@ export const useWebcam = (options: UseWebcamOptions = {}) => {
         }
         setWebcamVideo(webcamVideoRef.current);
     }, [hasPermission, webcamVideoRef]);
-
-    const { deviceList } = useGetDeviceList(hasPermission, onDevices);
 
     const combinedDeviceChoiceOptions = useMemo(() => {
         return Object.assign(
