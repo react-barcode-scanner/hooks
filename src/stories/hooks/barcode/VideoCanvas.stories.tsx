@@ -4,11 +4,12 @@ import { useRef } from 'react';
 import { useVideoCanvas, useWebcam } from '../../../hooks';
 
 const VideoCanvasStories = () => {
-    const { webcamVideo, webcamVideoRef, hasPermission } = useWebcam();
+    const { webcamVideo, webcamVideoRef, hasPermission, trackSettings } = useWebcam();
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
     useVideoCanvas({
         webcamVideo,
+        trackSettings,
         canvas: canvasRef.current,
         hasPermission,
         shouldPlay: true,

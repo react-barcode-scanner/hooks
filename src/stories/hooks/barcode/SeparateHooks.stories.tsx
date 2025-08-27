@@ -22,20 +22,33 @@ const SeparateHooksStories = (props: SeparateHooksProps) => {
     } = props;
 
     const [codes, setCodes] = useState<string[]>([]);
+    const [_devices, setDevices] = useState<MediaDeviceInfo[]>([]);
 
     const onScan = (code: string) => {
         setCodes(codes.concat(code));
     };
 
-    const { webcamVideo, webcamVideoRef, hasPermission } = useWebcam({});
-    const { onDraw, canDetect, canvas, canvasRef } = useScanCanvas({ hasPermission, onScan });
+    const {
+        webcamVideo,
+        webcamVideoRef,
+        hasPermission,
+        trackSettings,
+    } = useWebcam({
+        onDevices: setDevices,
+    });
+    const { onDraw, canDetect, canvas, canvasRef } = useScanCanvas({
+        hasPermission,
+        onScan,
+    });
 
     useVideoCanvas({
         onDraw,
         webcamVideo,
+        trackSettings,
         shouldDraw: canDetect,
         canvas,
         hasPermission,
+        shouldPlay: true,
         zoom,
     });
 

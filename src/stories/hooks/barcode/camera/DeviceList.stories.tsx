@@ -3,8 +3,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import { useGetDeviceList } from '../../../../hooks';
 
 const DeviceListStories = (props: any) => {
-    const { hasPermission } = props;
-    const { deviceList } = useGetDeviceList(hasPermission);
+    const { deviceList } = useGetDeviceList();
 
     return (
         <div>
