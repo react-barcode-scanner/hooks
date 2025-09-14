@@ -4,7 +4,6 @@ import {
     useDeviceStream,
     useGetDeviceList,
 } from './camera';
-import { environmentCameraRegEx } from './camera/constants';
 
 const defaultDeviceChoiceOptions: DeviceChoiceOptions = {
     matchers: [/ultra/i, /back/i],

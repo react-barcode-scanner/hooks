@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from 'react';
 
 export type DeviceChoiceOptions = {
     matchers?: RegExp[];
-    deviceId?: string;
+    deviceId?: {
+        exact: string;
+    };
     facingMode?: 'user' | 'environment';
     width?: number;
     height?: number;
@@ -30,7 +32,10 @@ export const useDeviceStream = (
         let active = true;
 
         if (hasPermission && constraints) {
-            getUserMedia(constraints, 'useDeviceStream #1')
+            if (stream) {
+                removeStreamTracks(stream);
+            }
+            getUserMedia(constraints)
                 .then((stream: MediaStream) => {
                     if (!active) {
                         removeStreamTracks(stream);
@@ -41,13 +46,12 @@ export const useDeviceStream = (
                 .catch(error => {
                     console.log(`requested device not available`, constraints, error);
                     return getUserMedia(
-                        { video: { facingMode: 'environment' } },
-                        'useDeviceStream #2',
+                        { video: { facingMode: 'environment' } }
                     )
                         .then(setStreamAndSettings)
                         .catch(error => {
                             console.log('no environment-facing camera available', error);
-                            return getUserMedia({ video: true }, 'useDeviceStream #3')
+                            return getUserMedia({ video: true })
                                 .then(setStreamAndSettings);
                         });
                 });
@@ -82,7 +86,8 @@ const getMediaConstraintsForDeviceChoiceOptions = (
     constraints.video = { width, height };
 
     if (deviceId) {
-        advancedConstraints.push({ deviceId });
+        constraints.video.deviceId = deviceId;
+        return constraints;
     }
     if (!deviceId && matchers?.length) {
         for (const matcher of matchers) {
@@ -90,7 +95,6 @@ const getMediaConstraintsForDeviceChoiceOptions = (
                 return matcher.test(deviceInfo.label);
             });
             if (matched.length === 1) {
-                // advancedConstraints.push({ deviceId: matched[0].deviceId });
                 constraints.video.deviceId = matched[0].deviceId;
                 break;
             }
@@ -119,7 +123,7 @@ const getMediaConstraintsForDeviceChoiceOptions = (
 // let useMediaAttempts = 0;
 // let useMediaSuccesses = 0;
 
-export const getUserMedia = async (constraints: MediaStreamConstraints, context: string = '') => {
+export const getUserMedia = async (constraints: MediaStreamConstraints) => {
     // const attempts = ++useMediaAttempts;
     // console.log(`use media attempts: ${attempts} (${context})`, constraints);
     // const successes = useMediaSuccesses;

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { ChangeEvent, useEffect, useMemo, useRef } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { useBarcodeScanner } from '../../../hooks';
@@ -27,7 +27,16 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
     } = props;
 
     const [codes, setCodes] = useState<string[]>([]);
-    const [devices, setDevices] = useState<any[]>([]);
+    const [devices, setDevices] = useState<MediaDeviceInfo[]>([]);
+    const [deviceId, setDeviceId] = useState<string>();
+
+    const deviceChoiceOptions = useMemo(() => {
+        if (!deviceId) {
+            return undefined;
+        }
+        return { deviceId: { exact: deviceId } };
+    }, [deviceId]);
+
     void devices;
 
     const onScan = (code: string) => {
@@ -42,6 +51,7 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
         zoom,
         onDevices,
         onScan,
+        deviceChoiceOptions,
     });
 
     const containerRef = useRef<HTMLDivElement>(null);
@@ -63,6 +73,10 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
         videoCropHeight
     ]);
 
+    const handleCameraChange = (event: ChangeEvent<HTMLSelectElement>) => {
+        setDeviceId(event.currentTarget.value);
+    };
+
     return (
         <div>
             {hasPermission ? (
@@ -76,6 +90,15 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
                     <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
                 </div>
             ) : null}
+            {devices.length > 0 && <div className="devices-container">
+                <select onChange={handleCameraChange}>
+                    {devices.map((device: MediaDeviceInfo) => {
+                        return <option key={device.deviceId} value={device.deviceId}>
+                            {device.label} ({device.deviceId.slice(0, 8)}...)
+                        </option>;
+                    })}
+                </select>
+            </div>}
             <div className={'scanned-codes'}>
                 <textarea rows={10} cols={100} readOnly={true} value={codes.join('\n')} />
             </div>

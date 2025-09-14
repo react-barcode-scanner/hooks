@@ -120,23 +120,30 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
 
             return streamToCanvas;
     },
-        [bounds, onDraw, webcamVideo, shouldDraw, context],
+        [bounds, onDraw, trackSettings, webcamVideo, shouldDraw, context],
     );
 
     useEffect(() => {
         if (!bounds) {
             return;
         }
-        if (hasPermission && context && webcamVideo && !hasListener) {
-            webcamVideo.addEventListener('play', () => {
+        if (hasPermission && context && webcamVideo) {
+            if (!hasListener) {
+                webcamVideo.addEventListener('play', () => {
+                    intervalIds.forEach(window.clearInterval);
+                    streamToCanvas();
+                    addIntervalId(window.setInterval(streamToCanvas, timeoutDelay));
+                }, { once: true });
+                if (shouldPlay) {
+                    playWithRetry(webcamVideo).then(onPlay);
+                }
+                setHasListener(true);
+            } else {
                 intervalIds.forEach(window.clearInterval);
                 streamToCanvas();
                 addIntervalId(window.setInterval(streamToCanvas, timeoutDelay));
-            }, { once: true });
-            if (shouldPlay) {
                 playWithRetry(webcamVideo).then(onPlay);
             }
-            setHasListener(true);
         }
     }, [
         bounds,
@@ -144,6 +151,7 @@ export const useVideoCanvas = (options: UseVideoCanvasOptions) => {
         webcamVideo,
         onPlay,
         shouldPlay,
+        streamToCanvas,
         hasPermission,
         context,
     ]);
