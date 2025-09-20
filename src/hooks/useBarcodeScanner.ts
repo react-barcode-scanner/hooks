@@ -51,6 +51,8 @@ export const useBarcodeScanner = (options: UseBarcodeScannerOptions) => {
         webcamVideoRef,
         canvasRef,
         stream,
+        trackVideoWidth: trackSettings?.width,
+        trackVideoHeight: trackSettings?.height,
         detectedBarcodes: detectedBarcodesRef.current,
         hasPermission,
     };

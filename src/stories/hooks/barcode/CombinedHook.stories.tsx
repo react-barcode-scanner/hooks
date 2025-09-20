@@ -17,10 +17,10 @@ type CombinedHookStoriesProps = {
 
 const CombinedHookStories = (props: CombinedHookStoriesProps) => {
     const {
-        canvasWidth = 640,
-        canvasHeight = 480,
-        videoWidth = 640,
-        videoHeight = 480,
+        canvasWidth = 480,
+        canvasHeight = 640,
+        videoWidth = 480,
+        videoHeight = 640,
         videoCropWidth = 640,
         videoCropHeight = 376,
         zoom = 1,
@@ -47,7 +47,13 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
         setDevices(devices);
     };
 
-    const { webcamVideoRef, canvasRef, hasPermission } = useBarcodeScanner({
+    const {
+        trackVideoWidth,
+        trackVideoHeight,
+        webcamVideoRef,
+        canvasRef,
+        hasPermission,
+    } = useBarcodeScanner({
         zoom,
         onDevices,
         onScan,
@@ -57,14 +63,16 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        containerRef.current?.style.setProperty('--video-width', `${videoWidth}px`);
-        containerRef.current?.style.setProperty('--video-height', `${videoHeight}px`);
-        containerRef.current?.style.setProperty('--canvas-width', `${canvasWidth}px`);
-        containerRef.current?.style.setProperty('--canvas-height', `${canvasHeight}px`);
+        containerRef.current?.style.setProperty('--video-width', `${trackVideoWidth ?? videoWidth}px`);
+        containerRef.current?.style.setProperty('--video-height', `${trackVideoHeight ?? videoHeight}px`);
+        containerRef.current?.style.setProperty('--canvas-width', `${trackVideoWidth ?? canvasWidth}px`);
+        containerRef.current?.style.setProperty('--canvas-height', `${trackVideoHeight ?? canvasHeight}px`);
         containerRef.current?.style.setProperty('--video-crop-width', `${videoCropWidth}px`);
         containerRef.current?.style.setProperty('--video-crop-height', `${videoCropHeight}px`);
     }, [
         containerRef.current,
+        trackVideoWidth,
+        trackVideoHeight,
         videoWidth,
         videoHeight,
         canvasWidth,
@@ -83,11 +91,13 @@ const CombinedHookStories = (props: CombinedHookStoriesProps) => {
                 <div ref={containerRef} className={'react-barcode-scanner-container'}>
                     <video
                         ref={webcamVideoRef}
-                        width={videoWidth}
-                        height={videoHeight}
+                        width={trackVideoWidth ?? videoWidth}
+                        height={trackVideoHeight ?? videoHeight}
                         playsInline={true}
                     />
-                    <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />
+                    <canvas ref={canvasRef}
+                            width={canvasWidth}
+                            height={canvasHeight} />
                 </div>
             ) : null}
             {devices.length > 0 && <div className="devices-container">
@@ -118,9 +128,9 @@ export const Primary: Story = {
     args: {
         zoom: 1,
         canvasWidth: 480,
-        canvasHeight: 376,
+        canvasHeight: 640,
         videoWidth: 480,
-        videoHeight: 376,
+        videoHeight: 640,
         videoCropWidth: 288,
         videoCropHeight: 188,
     },
