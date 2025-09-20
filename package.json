@@ -6,7 +6,7 @@
         "directory": "packages/@react-barcode-scanner/hooks"
     },
     "license": "MIT",
-    "version": "0.0.71",
+    "version": "0.0.72",
     "private": false,
     "main": "dist/index.js",
     "module": "dist/esm/index.js",
