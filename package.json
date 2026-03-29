@@ -6,7 +6,7 @@
         "directory": "packages/@react-barcode-scanner/hooks"
     },
     "license": "MIT",
-    "version": "0.0.73",
+    "version": "0.0.74",
     "engines": {
         "node": ">=24"
     },
@@ -31,7 +31,7 @@
     "publishConfig": {
         "access": "public",
         "provenance": true,
-        "registry": "https://registry.npmjs.org"
+        "registry": "https://registry.npmjs.org/"
     },
     "eslint": {
         "extends": [
