@@ -1,0 +1,2123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Components Manifest</title>
+  <style>
+      :root {
+          --bg: #0b0c10;
+          --panel: #121318;
+          --muted: #9aa0a6;
+          --fg: #e8eaed;
+          --ok: #22c55e;
+          --info: #1e88e5;
+          --err: #c62828;
+          --ok-bg: #0c1a13;
+          --info-bg: #0c1624;
+          --err-bg: #1a0e0e;
+          --chip: #1f2330;
+          --border: #2b2f3a;
+          --link: #8ab4f8;
+          --active-ring: 1px; /* 1px active ring for pills and toggles */
+      }
+
+      * {
+          box-sizing: border-box;
+      }
+
+      html,
+      body {
+          margin: 0;
+          background: var(--bg);
+          color: var(--fg);
+          font: 14px/1.5 system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Ubuntu,
+          Cantarell,
+          'Helvetica Neue',
+          Arial,
+          'Noto Sans';
+      }
+
+      .wrap {
+          max-width: 1100px;
+          margin: 0 auto;
+          padding: 16px 20px;
+      }
+
+      header {
+          position: sticky;
+          top: 0;
+          backdrop-filter: blur(6px);
+          background: color-mix(in srgb, var(--bg) 84%, transparent);
+          border-bottom: 1px solid var(--border);
+          z-index: 10;
+      }
+
+      h1 {
+          font-size: 20px;
+          margin: 0 0 6px;
+      }
+
+      .summary {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+          align-items: center;
+      }
+
+      /* Top filter pills */
+      .filter-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 12px;
+          border: 1px solid var(--border);
+          border-radius: 999px;
+          background: var(--panel);
+          text-decoration: none;
+          cursor: pointer;
+          user-select: none;
+          color: var(--fg);
+      }
+
+      .filter-pill.ok {
+          color: #b9f6ca;
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+          background: color-mix(in srgb, var(--ok) 18%, #000);
+      }
+
+      .filter-pill.info {
+          color: #b3d9ff;
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+          background: var(--info-bg);
+      }
+
+      .filter-pill.err {
+          color: #ff9aa0;
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+          background: var(--err-bg);
+      }
+
+      .filter-pill.all {
+          color: #d7dbe0;
+          border-color: var(--border);
+          background: var(--panel);
+      }
+
+      .filter-pill[aria-disabled='true'] {
+          cursor: default;
+          text-decoration: none;
+      }
+
+      .filter-pill:focus,
+      .filter-pill:active {
+          outline: none;
+          box-shadow: none;
+      }
+
+      /* Selected top pill ring via :target */
+      #filter-all:target ~ header .filter-pill[data-k='all'],
+      #filter-errors:target ~ header .filter-pill[data-k='errors'],
+      #filter-infos:target ~ header .filter-pill[data-k='infos'],
+      #filter-story-errors:target ~ header .filter-pill[data-k='story-errors'],
+      #filter-doc-errors:target ~ header .filter-pill[data-k='docs'],
+      #filter-docs:target ~ header .filter-pill[data-k='docs'] {
+          box-shadow: 0 0 0 var(--active-ring) currentColor;
+          border-color: currentColor;
+      }
+
+      /* Hidden targets for filtering */
+      #filter-all,
+      #filter-errors,
+      #filter-infos,
+      #filter-story-errors,
+      #filter-doc-errors,
+      #filter-docs {
+          display: none;
+      }
+
+      main {
+          padding: 36px 0 40px;
+      }
+
+      .grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 18px;
+      }
+
+      /* one card per row */
+
+      .card {
+          border: 1px solid var(--border);
+          background: var(--panel);
+          border-radius: 14px;
+          padding: 14px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      .head {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+      }
+
+      .title {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 10px;
+      }
+
+      .title h2 {
+          font-size: 16px;
+          margin: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .meta {
+          font-size: 12px;
+          color: var(--muted);
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+      }
+
+      .kv {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+      }
+
+      .chip {
+          font-size: 12px;
+          padding: 4px 8px;
+          border-radius: 999px;
+          background: var(--chip);
+          border: 1px solid var(--border);
+      }
+
+      .hint {
+          color: var(--muted);
+          font-size: 12px;
+      }
+
+      .badges {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+
+      /* Per-card badges: labels become toggles when clickable */
+      .badge {
+          font-size: 12px;
+          padding: 3px 8px;
+          border-radius: 999px;
+          border: 1px solid var(--border);
+          background: var(--chip);
+          color: #d7dbe0;
+      }
+
+      .badge.ok {
+          color: #b9f6ca;
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+      }
+
+      .badge.info {
+          color: #b3d9ff;
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+      }
+
+      .badge.err {
+          color: #ff9aa0;
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+      }
+
+      .as-toggle {
+          cursor: pointer;
+      }
+
+      /* 1px ring on active toggle */
+      .tg-err:checked + label.as-toggle,
+      .tg-info:checked + label.as-toggle,
+      .tg-stories:checked + label.as-toggle,
+      .tg-docs:checked + label.as-toggle,
+      .tg-content:checked + label.as-toggle,
+      .tg-props:checked + label.as-toggle {
+          box-shadow: 0 0 0 var(--active-ring) currentColor;
+          border-color: currentColor;
+      }
+
+      /* Panels: hidden by default, shown when respective toggle checked */
+      .panels {
+          display: grid;
+          gap: 10px;
+      }
+
+      .panel {
+          display: none;
+      }
+
+      .tg-err:checked ~ .panels .panel-err {
+          display: grid;
+      }
+
+      .tg-info:checked ~ .panels .panel-info {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-content:checked ~ .panels .panel-content {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-props:checked ~ .panels .panel-props {
+          display: grid;
+      }
+
+      /* Colored notes for prop type error + info */
+      .note {
+          padding: 12px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+      }
+
+      .note.err {
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+          background: var(--err-bg);
+          color: #ffd1d4;
+      }
+
+      .note.info {
+          border-color: color-mix(in srgb, var(--info) 55%, var(--border));
+          background: var(--info-bg);
+          color: #d6e8ff;
+      }
+
+      .note.ok {
+          border-color: color-mix(in srgb, var(--ok) 55%, var(--border));
+          background: var(--ok-bg);
+          color: var(--fg);
+      }
+
+      .note-title {
+          font-weight: 600;
+          margin-bottom: 6px;
+      }
+
+      .note-body {
+          white-space: normal;
+      }
+
+      /* Story error cards */
+      .ex {
+          padding: 10px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          background: #0f131b;
+      }
+
+      .ex.err {
+          border-color: color-mix(in srgb, var(--err) 55%, var(--border));
+      }
+
+      .row {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
+      }
+
+      .status-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          display: inline-block;
+      }
+
+      .dot-ok {
+          background: var(--ok);
+      }
+
+      .dot-err {
+          background: var(--err);
+      }
+
+      .ex-name {
+          font-weight: 600;
+      }
+
+      /* Error groups (visible in errors filter) */
+      .error-groups {
+          display: none;
+          margin-bottom: 16px;
+      }
+
+      .group {
+          border: 1px solid var(--border);
+          background: var(--panel);
+          border-radius: 14px;
+          overflow: hidden;
+      }
+
+      .group + .group {
+          margin-top: 12px;
+      }
+
+      .group-header {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          padding: 12px 14px;
+          cursor: pointer;
+          border-bottom: 1px solid var(--border);
+      }
+
+      .group-header:hover {
+          background: #141722;
+      }
+
+      .group-title {
+          font-weight: 600;
+          flex: 1;
+      }
+
+      .group-count {
+          font-size: 12px;
+          color: var(--muted);
+      }
+
+      .group-cards {
+          display: none;
+          padding: 12px;
+      }
+
+      .group .card {
+          margin: 12px 0;
+      }
+
+      .group .card:first-child {
+          margin-top: 0;
+      }
+
+      .group .card:last-child {
+          margin-bottom: 0;
+      }
+
+      /* caret rotation */
+      .group-tg:checked + label .caret {
+          transform: rotate(90deg);
+      }
+
+      .caret {
+          transition: transform 0.15s ease;
+      }
+
+      /* toggle body */
+      .group-tg:checked ~ .group-cards {
+          display: block;
+      }
+
+      /* CSS-only filtering of cards via top pills */
+      #filter-errors:target ~ main .card:not(.has-error):not(.has-story-error) {
+          display: none;
+      }
+
+      #filter-infos:target ~ main .card:not(.has-info) {
+          display: none;
+      }
+
+      #filter-story-errors:target ~ main .card:not(.has-story-error) {
+          display: none;
+      }
+
+      #filter-doc-errors:target ~ main .card:not(.has-doc-error) {
+          display: none;
+      }
+
+      #filter-docs:target ~ main .card:has(> .tg-docs),
+      #filter-docs:target ~ main .card.is-doc {
+          display: block;
+      }
+
+      #filter-docs:target ~ main .card:not(:has(> .tg-docs)):not(.is-doc) {
+          display: none;
+      }
+
+      #filter-all:target ~ main .card {
+          display: block;
+      }
+
+      /* In errors view, hide standalone component-error cards in the regular grid (they will appear in groups) */
+      #filter-errors:target ~ main .grid .card.has-error {
+          display: none;
+      }
+
+      /* Show grouped section only in errors view */
+      #filter-errors:target ~ main .error-groups {
+          display: block;
+      }
+
+      /* Section titles */
+      .section-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--muted);
+          margin: 24px 0 12px;
+          padding-bottom: 8px;
+          border-bottom: 1px solid var(--border);
+      }
+      .section-title:first-child {
+          margin-top: 0;
+      }
+
+      /* When a toggle is checked, show the corresponding panel */
+      .card > .tg-err:checked ~ .panels .panel-err {
+          display: grid;
+      }
+      
+      .card > .tg-info:checked ~ .panels .panel-info {
+          display: grid;
+      }
+      
+      .card > .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+      }
+
+      .card > .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+      }
+
+      .card > .tg-content:checked ~ .panels .panel-content {
+          display: grid;
+      }
+
+      /* Add vertical spacing around panels only when any panel is visible */
+      .card > .tg-err:checked ~ .panels,
+      .card > .tg-info:checked ~ .panels,
+      .card > .tg-stories:checked ~ .panels,
+      .card > .tg-docs:checked ~ .panels,
+      .card > .tg-content:checked ~ .panels,
+      .card > .tg-props:checked ~ .panels {
+          margin: 10px 0;
+      }
+
+      /* Optional: a subtle 1px ring on the active badge, using :has() if available */
+      @supports selector(.card:has(.tg-err:checked)) {
+          .card:has(.tg-err:checked) label[for$='-err'],
+          .card:has(.tg-info:checked) label[for$='-info'],
+          .card:has(.tg-stories:checked) label[for$='-stories'],
+          .card:has(.tg-docs:checked) label[for$='-docs'],
+          .card:has(.tg-content:checked) label[for$='-content'],
+          .card:has(.tg-props:checked) label[for$='-props'] {
+              box-shadow: 0 0 0 1px currentColor;
+              border-color: currentColor;
+          }
+      }
+
+      /* Wrap long lines in code blocks at ~120 characters */
+      pre, code {
+          font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      }
+      pre {
+          white-space: pre-wrap;
+          overflow-wrap: anywhere;
+          word-break: break-word;
+          overflow-x: auto; /* fallback for extremely long tokens */
+          margin: 8px 0 0;
+      }
+      pre > code {
+          display: block;
+          white-space: inherit;
+          overflow-wrap: inherit;
+          word-break: inherit;
+          inline-size: min(100%, 120ch);
+      }
+
+      /* MDX content container for docs */
+      .mdx-content {
+          background: #0f131b;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          padding: 12px;
+          max-height: 400px;
+          overflow-y: auto;
+          margin-top: 8px;
+      }
+  </style>
+</head>
+<body>
+<!-- Hidden targets for the top-level filters -->
+<span id="filter-all"></span>
+<span id="filter-errors"></span>
+<span id="filter-infos"></span>
+<span id="filter-story-errors"></span>
+<span id="filter-doc-errors"></span>
+<span id="filter-docs"></span>
+<header>
+  <div class="wrap">
+    <h1>Manifest Debugger</h1>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><a class="filter-pill err" data-k="errors" href="#filter-errors">5/5 prop type errors</a><a class="filter-pill info" data-k="infos" href="#filter-infos">5/5 infos</a><a class="filter-pill err" data-k="story-errors" href="#filter-story-errors">5/5 story errors</a></div>
+  </div>
+</header>
+<main>
+  <div class="wrap">
+    <div class="note ok" style="margin-bottom: 16px;">
+              Using <code>react-docgen-typescript</code>. Generation took <strong>0.0s</strong>.
+            </div>
+    <h2 class="section-title">Components</h2>
+    <div class="grid" role="list">
+      
+<article
+  class="card 
+  has-error 
+  has-info 
+  has-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="CombinedHookStories">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> CombinedHookStories</h2>
+      <div class="badges">
+        <label for="c-0-scanner-combined-hook-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-0-scanner-combined-hook-info" class="badge info as-toggle">1 info</label>
+        <label for="c-0-scanner-combined-hook-stories" class="badge err as-toggle">1/1 story errors</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/hooks/barcode/CombinedHook.stories.tsx">scanner-combined-hook · ./src/stories/hooks/barcode/CombinedHook.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-0-scanner-combined-hook-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-0-scanner-combined-hook-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-0-scanner-combined-hook-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;CombinedHookStories&quot; component.
+  117 | };
+  118 |
+&gt; 119 | const meta: Meta&lt;typeof CombinedHookStories&gt; = {
+      | ^
+  120 |     component: CombinedHookStories,
+  121 |     title: &#39;Scanner/Combined Hook&#39;,
+  122 | };
+
+./src/stories/hooks/barcode/CombinedHook.stories.tsx:
+import React, { ChangeEvent, useEffect, useMemo, useRef } from &#39;react&#39;;
+import { Meta, StoryObj } from &#39;@storybook/react&#39;;
+import { useState } from &#39;react&#39;;
+import { useBarcodeScanner } from &#39;../../../hooks&#39;;
+
+import &#39;./CombinedHook.css&#39;;
+
+type CombinedHookStoriesProps = {
+    canvasWidth?: number;
+    canvasHeight?: number;
+    videoWidth?: number;
+    videoHeight?: number;
+    videoCropWidth?: number;
+    videoCropHeight?: number;
+    zoom?: number;
+};
+
+const CombinedHookStories = (props: CombinedHookStoriesProps) =&gt; {
+    const {
+        canvasWidth = 480,
+        canvasHeight = 640,
+        videoWidth = 480,
+        videoHeight = 640,
+        videoCropWidth = 640,
+        videoCropHeight = 376,
+        zoom = 1,
+    } = props;
+
+    const [codes, setCodes] = useState&lt;string[]&gt;([]);
+    const [devices, setDevices] = useState&lt;MediaDeviceInfo[]&gt;([]);
+    const [deviceId, setDeviceId] = useState&lt;string&gt;();
+
+    const deviceChoiceOptions = useMemo(() =&gt; {
+        if (!deviceId) {
+            return undefined;
+        }
+        return { deviceId: { exact: deviceId } };
+    }, [deviceId]);
+
+    void devices;
+
+    const onScan = (code: string) =&gt; {
+        setCodes(codes.concat(code));
+    };
+
+    const onDevices = (devices: any[]) =&gt; {
+        setDevices(devices);
+    };
+
+    const {
+        trackVideoWidth,
+        trackVideoHeight,
+        webcamVideoRef,
+        canvasRef,
+        hasPermission,
+    } = useBarcodeScanner({
+        zoom,
+        onDevices,
+        onScan,
+        deviceChoiceOptions,
+    });
+
+    const containerRef = useRef&lt;HTMLDivElement&gt;(null);
+
+    useEffect(() =&gt; {
+        containerRef.current?.style.setProperty(&#39;--video-width&#39;, `${trackVideoWidth ?? videoWidth}px`);
+        containerRef.current?.style.setProperty(&#39;--video-height&#39;, `${trackVideoHeight ?? videoHeight}px`);
+        containerRef.current?.style.setProperty(&#39;--canvas-width&#39;, `${trackVideoWidth ?? canvasWidth}px`);
+        containerRef.current?.style.setProperty(&#39;--canvas-height&#39;, `${trackVideoHeight ?? canvasHeight}px`);
+        containerRef.current?.style.setProperty(&#39;--video-crop-width&#39;, `${videoCropWidth}px`);
+        containerRef.current?.style.setProperty(&#39;--video-crop-height&#39;, `${videoCropHeight}px`);
+    }, [
+        containerRef.current,
+        trackVideoWidth,
+        trackVideoHeight,
+        videoWidth,
+        videoHeight,
+        canvasWidth,
+        canvasHeight,
+        videoCropWidth,
+        videoCropHeight
+    ]);
+
+    const handleCameraChange = (event: ChangeEvent&lt;HTMLSelectElement&gt;) =&gt; {
+        setDeviceId(event.currentTarget.value);
+    };
+
+    return (
+        &lt;div&gt;
+            {hasPermission ? (
+                &lt;div ref={containerRef} className={&#39;react-barcode-scanner-container&#39;}&gt;
+                    &lt;video
+                        ref={webcamVideoRef}
+                        width={trackVideoWidth ?? videoWidth}
+                        height={trackVideoHeight ?? videoHeight}
+                        playsInline={true}
+                    /&gt;
+                    &lt;canvas ref={canvasRef}
+                            width={canvasWidth}
+                            height={canvasHeight} /&gt;
+                &lt;/div&gt;
+            ) : null}
+            {devices.length &gt; 0 &amp;&amp; &lt;div className=&quot;devices-container&quot;&gt;
+                &lt;select onChange={handleCameraChange}&gt;
+                    {devices.map((device: MediaDeviceInfo) =&gt; {
+                        return &lt;option key={device.deviceId} value={device.deviceId}&gt;
+                            {device.label} ({device.deviceId.slice(0, 8)}...)
+                        &lt;/option&gt;;
+                    })}
+                &lt;/select&gt;
+            &lt;/div&gt;}
+            &lt;div className={&#39;scanned-codes&#39;}&gt;
+                &lt;textarea rows={10} cols={100} readOnly={true} value={codes.join(&#39;\n&#39;)} /&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    );
+};
+
+const meta: Meta&lt;typeof CombinedHookStories&gt; = {
+    component: CombinedHookStories,
+    title: &#39;Scanner/Combined Hook&#39;,
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof CombinedHookStories&gt;;
+
+export const Primary: Story = {
+    args: {
+        zoom: 1,
+        canvasWidth: 480,
+        canvasHeight: 640,
+        videoWidth: 480,
+        videoHeight: 640,
+        videoCropWidth: 288,
+        videoCropHeight: 188,
+    },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { CombinedHookStories } from "@react-barcode-scanner/hooks";</code></pre>
+              </div>
+          
+          
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  has-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="DeviceListStories">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> DeviceListStories</h2>
+      <div class="badges">
+        <label for="c-1-camera-device-list-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-1-camera-device-list-info" class="badge info as-toggle">1 info</label>
+        <label for="c-1-camera-device-list-stories" class="badge err as-toggle">1/1 story errors</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/hooks/barcode/camera/DeviceList.stories.tsx">camera-device-list · ./src/stories/hooks/barcode/camera/DeviceList.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-1-camera-device-list-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-1-camera-device-list-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-1-camera-device-list-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;DeviceListStories&quot; component.
+  19 | };
+  20 |
+&gt; 21 | const meta: Meta&lt;typeof DeviceListStories&gt; = {
+     | ^
+  22 |     component: DeviceListStories,
+  23 |     title: &#39;Camera/Device List&#39;,
+  24 | };
+
+./src/stories/hooks/barcode/camera/DeviceList.stories.tsx:
+import React from &#39;react&#39;;
+import { Meta, StoryObj } from &#39;@storybook/react&#39;;
+import { useGetDeviceList } from &#39;../../../../hooks&#39;;
+
+const DeviceListStories = (props: any) =&gt; {
+    const { deviceList } = useGetDeviceList();
+
+    return (
+        &lt;div&gt;
+            Device List:{&#39; &#39;}
+            &lt;textarea
+                readOnly={true}
+                rows={10}
+                cols={100}
+                value={JSON.stringify(deviceList, undefined, 2)}
+            /&gt;
+        &lt;/div&gt;
+    );
+};
+
+const meta: Meta&lt;typeof DeviceListStories&gt; = {
+    component: DeviceListStories,
+    title: &#39;Camera/Device List&#39;,
+};
+
+export default meta;
+
+type Story = StoryObj&lt;typeof DeviceListStories&gt;;
+
+export const Primary: Story = {
+    args: {
+        hasPermission: true,
+    },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { DeviceListStories } from "@react-barcode-scanner/hooks";</code></pre>
+              </div>
+          
+          
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  has-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="SeparateHooksStories">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> SeparateHooksStories</h2>
+      <div class="badges">
+        <label for="c-2-scanner-separate-hooks-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-2-scanner-separate-hooks-info" class="badge info as-toggle">1 info</label>
+        <label for="c-2-scanner-separate-hooks-stories" class="badge err as-toggle">1/1 story errors</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/hooks/barcode/SeparateHooks.stories.tsx">scanner-separate-hooks · ./src/stories/hooks/barcode/SeparateHooks.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-2-scanner-separate-hooks-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-2-scanner-separate-hooks-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-2-scanner-separate-hooks-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;SeparateHooksStories&quot; component.
+  72 | };
+  73 |
+&gt; 74 | const meta: Meta&lt;typeof SeparateHooksStories&gt; = {
+     | ^
+  75 |     component: SeparateHooksStories,
+  76 |     title: &#39;Scanner/Separate Hooks&#39;,
+  77 | };
+
+./src/stories/hooks/barcode/SeparateHooks.stories.tsx:
+import React, { useState } from &#39;react&#39;;
+import { Meta, StoryObj } from &#39;@storybook/react&#39;;
+import { useScanCanvas, useVideoCanvas, useWebcam } from &#39;../../../hooks&#39;;
+
+import &#39;./CombinedHook.css&#39;;
+
+type SeparateHooksProps = {
+    canvasWidth?: number;
+    canvasHeight?: number;
+    videoWidth?: number;
+    videoHeight?: number;
+    zoom?: number;
+};
+
+const SeparateHooksStories = (props: SeparateHooksProps) =&gt; {
+    const {
+        canvasWidth = 320,
+        canvasHeight = 240,
+        videoWidth = 640,
+        videoHeight = 480,
+        zoom = 1,
+    } = props;
+
+    const [codes, setCodes] = useState&lt;string[]&gt;([]);
+    const [_devices, setDevices] = useState&lt;MediaDeviceInfo[]&gt;([]);
+
+    const onScan = (code: string) =&gt; {
+        setCodes(codes.concat(code));
+    };
+
+    const {
+        webcamVideo,
+        webcamVideoRef,
+        hasPermission,
+        trackSettings,
+    } = useWebcam({
+        onDevices: setDevices,
+    });
+    const { onDraw, canDetect, canvas, canvasRef } = useScanCanvas({
+        hasPermission,
+        onScan,
+    });
+
+    useVideoCanvas({
+        onDraw,
+        webcamVideo,
+        trackSettings,
+        shouldDraw: canDetect,
+        canvas,
+        hasPermission,
+        shouldPlay: true,
+        zoom,
+    });
+
+    return (
+        &lt;div&gt;
+            {hasPermission ? (
+                &lt;div className={&#39;scan-canvas-container&#39;}&gt;
+                    &lt;div className={&#39;scan-canvas-video&#39;}&gt;
+                        &lt;video ref={webcamVideoRef} width={videoWidth} height={videoHeight} /&gt;
+                    &lt;/div&gt;
+                    &lt;div className={&#39;scan-canvas&#39;}&gt;
+                        &lt;canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} /&gt;
+                    &lt;/div&gt;
+                    &lt;div className={&#39;scanned-codes&#39;}&gt;
+                        &lt;textarea rows={10} cols={100} readOnly={true} value={codes.join(&#39;\n&#39;)} /&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            ) : null}
+        &lt;/div&gt;
+    );
+};
+
+const meta: Meta&lt;typeof SeparateHooksStories&gt; = {
+    component: SeparateHooksStories,
+    title: &#39;Scanner/Separate Hooks&#39;,
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof SeparateHooksStories&gt;;
+
+export const Primary: Story = {
+    args: {
+        zoom: 2,
+        canvasWidth: 320,
+        canvasHeight: 240,
+        videoWidth: 640,
+        videoHeight: 480,
+    },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { SeparateHooksStories } from "@react-barcode-scanner/hooks";</code></pre>
+              </div>
+          
+          
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  has-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="VideoCanvasStories">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> VideoCanvasStories</h2>
+      <div class="badges">
+        <label for="c-3-video-video-canvas-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-3-video-video-canvas-info" class="badge info as-toggle">1 info</label>
+        <label for="c-3-video-video-canvas-stories" class="badge err as-toggle">1/1 story errors</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/hooks/barcode/VideoCanvas.stories.tsx">video-video-canvas · ./src/stories/hooks/barcode/VideoCanvas.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-3-video-video-canvas-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-3-video-video-canvas-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-3-video-video-canvas-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;VideoCanvasStories&quot; component.
+  32 | };
+  33 |
+&gt; 34 | const meta: Meta&lt;typeof VideoCanvasStories&gt; = {
+     | ^
+  35 |     component: VideoCanvasStories,
+  36 |     title: &#39;Video/Video Canvas&#39;,
+  37 | };
+
+./src/stories/hooks/barcode/VideoCanvas.stories.tsx:
+import React from &#39;react&#39;;
+import { Meta, StoryObj } from &#39;@storybook/react&#39;;
+import { useRef } from &#39;react&#39;;
+import { useVideoCanvas, useWebcam } from &#39;../../../hooks&#39;;
+
+const VideoCanvasStories = () =&gt; {
+    const { webcamVideo, webcamVideoRef, hasPermission, trackSettings } = useWebcam();
+    const canvasRef = useRef&lt;HTMLCanvasElement | null&gt;(null);
+
+    useVideoCanvas({
+        webcamVideo,
+        trackSettings,
+        canvas: canvasRef.current,
+        hasPermission,
+        shouldPlay: true,
+    });
+
+    return (
+        &lt;div&gt;
+            {hasPermission ? (
+                &lt;div className={&#39;video-canvas-container&#39;}&gt;
+                    &lt;div className={&#39;video-canvas-video&#39;}&gt;
+                        &lt;video ref={webcamVideoRef} width={640} height={480} /&gt;
+                    &lt;/div&gt;
+                    &lt;div className={&#39;video-canvas&#39;}&gt;
+                        &lt;canvas ref={canvasRef} width={320} height={240} /&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            ) : null}
+        &lt;/div&gt;
+    );
+};
+
+const meta: Meta&lt;typeof VideoCanvasStories&gt; = {
+    component: VideoCanvasStories,
+    title: &#39;Video/Video Canvas&#39;,
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof VideoCanvasStories&gt;;
+
+export const Primary: Story = {
+    args: {},
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { VideoCanvasStories } from "@react-barcode-scanner/hooks";</code></pre>
+              </div>
+          
+          
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  has-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="WebcamStories">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> WebcamStories</h2>
+      <div class="badges">
+        <label for="c-4-video-webcam-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-4-video-webcam-info" class="badge info as-toggle">1 info</label>
+        <label for="c-4-video-webcam-stories" class="badge err as-toggle">1/1 story errors</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/hooks/barcode/Webcam.stories.tsx">video-webcam · ./src/stories/hooks/barcode/Webcam.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-4-video-webcam-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-4-video-webcam-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-4-video-webcam-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;WebcamStories&quot; component.
+  11 | };
+  12 |
+&gt; 13 | const meta: Meta&lt;typeof WebcamStories&gt; = {
+     | ^
+  14 |     component: WebcamStories,
+  15 |     title: &#39;Video/Webcam&#39;,
+  16 | };
+
+./src/stories/hooks/barcode/Webcam.stories.tsx:
+import React from &#39;react&#39;;
+import { Meta, StoryObj } from &#39;@storybook/react&#39;;
+import { useWebcam } from &#39;../../../hooks&#39;;
+
+const WebcamStories = (props: any) =&gt; {
+    const { webcamVideoRef, hasPermission } = useWebcam({});
+
+    return (
+        &lt;div&gt;{hasPermission ? &lt;video ref={webcamVideoRef} width={640} height={480} autoPlay={true} /&gt; : null}&lt;/div&gt;
+    );
+};
+
+const meta: Meta&lt;typeof WebcamStories&gt; = {
+    component: WebcamStories,
+    title: &#39;Video/Webcam&#39;,
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof WebcamStories&gt;;
+
+export const Primary: Story = {
+    args: {},
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { WebcamStories } from "@react-barcode-scanner/hooks";</code></pre>
+              </div>
+          
+          
+        </div>
+    
+  </div>
+</article>
+    </div>
+    <div class="error-groups" role="region" aria-label="Prop type error groups">
+        <section class="group">
+          <input id="no-component-import-found-toggle" class="group-tg" type="checkbox" hidden />
+          <label for="no-component-import-found-toggle" class="group-header">
+            <span class="caret">▸</span>
+            <span class="group-title">No component import found</span>
+            <span class="group-count">5</span>
+          </label>
+          <div class="group-cards">
+<article
+  class="card 
+  has-error 
+  has-info 
+  has-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="CombinedHookStories">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> CombinedHookStories</h2>
+      <div class="badges">
+        <label for="c-error-0-scanner-combined-hook-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-0-scanner-combined-hook-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-0-scanner-combined-hook-stories" class="badge err as-toggle">1/1 story errors</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/hooks/barcode/CombinedHook.stories.tsx">scanner-combined-hook · ./src/stories/hooks/barcode/CombinedHook.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-0-scanner-combined-hook-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-0-scanner-combined-hook-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-0-scanner-combined-hook-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;CombinedHookStories&quot; component.
+  117 | };
+  118 |
+&gt; 119 | const meta: Meta&lt;typeof CombinedHookStories&gt; = {
+      | ^
+  120 |     component: CombinedHookStories,
+  121 |     title: &#39;Scanner/Combined Hook&#39;,
+  122 | };
+
+./src/stories/hooks/barcode/CombinedHook.stories.tsx:
+import React, { ChangeEvent, useEffect, useMemo, useRef } from &#39;react&#39;;
+import { Meta, StoryObj } from &#39;@storybook/react&#39;;
+import { useState } from &#39;react&#39;;
+import { useBarcodeScanner } from &#39;../../../hooks&#39;;
+
+import &#39;./CombinedHook.css&#39;;
+
+type CombinedHookStoriesProps = {
+    canvasWidth?: number;
+    canvasHeight?: number;
+    videoWidth?: number;
+    videoHeight?: number;
+    videoCropWidth?: number;
+    videoCropHeight?: number;
+    zoom?: number;
+};
+
+const CombinedHookStories = (props: CombinedHookStoriesProps) =&gt; {
+    const {
+        canvasWidth = 480,
+        canvasHeight = 640,
+        videoWidth = 480,
+        videoHeight = 640,
+        videoCropWidth = 640,
+        videoCropHeight = 376,
+        zoom = 1,
+    } = props;
+
+    const [codes, setCodes] = useState&lt;string[]&gt;([]);
+    const [devices, setDevices] = useState&lt;MediaDeviceInfo[]&gt;([]);
+    const [deviceId, setDeviceId] = useState&lt;string&gt;();
+
+    const deviceChoiceOptions = useMemo(() =&gt; {
+        if (!deviceId) {
+            return undefined;
+        }
+        return { deviceId: { exact: deviceId } };
+    }, [deviceId]);
+
+    void devices;
+
+    const onScan = (code: string) =&gt; {
+        setCodes(codes.concat(code));
+    };
+
+    const onDevices = (devices: any[]) =&gt; {
+        setDevices(devices);
+    };
+
+    const {
+        trackVideoWidth,
+        trackVideoHeight,
+        webcamVideoRef,
+        canvasRef,
+        hasPermission,
+    } = useBarcodeScanner({
+        zoom,
+        onDevices,
+        onScan,
+        deviceChoiceOptions,
+    });
+
+    const containerRef = useRef&lt;HTMLDivElement&gt;(null);
+
+    useEffect(() =&gt; {
+        containerRef.current?.style.setProperty(&#39;--video-width&#39;, `${trackVideoWidth ?? videoWidth}px`);
+        containerRef.current?.style.setProperty(&#39;--video-height&#39;, `${trackVideoHeight ?? videoHeight}px`);
+        containerRef.current?.style.setProperty(&#39;--canvas-width&#39;, `${trackVideoWidth ?? canvasWidth}px`);
+        containerRef.current?.style.setProperty(&#39;--canvas-height&#39;, `${trackVideoHeight ?? canvasHeight}px`);
+        containerRef.current?.style.setProperty(&#39;--video-crop-width&#39;, `${videoCropWidth}px`);
+        containerRef.current?.style.setProperty(&#39;--video-crop-height&#39;, `${videoCropHeight}px`);
+    }, [
+        containerRef.current,
+        trackVideoWidth,
+        trackVideoHeight,
+        videoWidth,
+        videoHeight,
+        canvasWidth,
+        canvasHeight,
+        videoCropWidth,
+        videoCropHeight
+    ]);
+
+    const handleCameraChange = (event: ChangeEvent&lt;HTMLSelectElement&gt;) =&gt; {
+        setDeviceId(event.currentTarget.value);
+    };
+
+    return (
+        &lt;div&gt;
+            {hasPermission ? (
+                &lt;div ref={containerRef} className={&#39;react-barcode-scanner-container&#39;}&gt;
+                    &lt;video
+                        ref={webcamVideoRef}
+                        width={trackVideoWidth ?? videoWidth}
+                        height={trackVideoHeight ?? videoHeight}
+                        playsInline={true}
+                    /&gt;
+                    &lt;canvas ref={canvasRef}
+                            width={canvasWidth}
+                            height={canvasHeight} /&gt;
+                &lt;/div&gt;
+            ) : null}
+            {devices.length &gt; 0 &amp;&amp; &lt;div className=&quot;devices-container&quot;&gt;
+                &lt;select onChange={handleCameraChange}&gt;
+                    {devices.map((device: MediaDeviceInfo) =&gt; {
+                        return &lt;option key={device.deviceId} value={device.deviceId}&gt;
+                            {device.label} ({device.deviceId.slice(0, 8)}...)
+                        &lt;/option&gt;;
+                    })}
+                &lt;/select&gt;
+            &lt;/div&gt;}
+            &lt;div className={&#39;scanned-codes&#39;}&gt;
+                &lt;textarea rows={10} cols={100} readOnly={true} value={codes.join(&#39;\n&#39;)} /&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    );
+};
+
+const meta: Meta&lt;typeof CombinedHookStories&gt; = {
+    component: CombinedHookStories,
+    title: &#39;Scanner/Combined Hook&#39;,
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof CombinedHookStories&gt;;
+
+export const Primary: Story = {
+    args: {
+        zoom: 1,
+        canvasWidth: 480,
+        canvasHeight: 640,
+        videoWidth: 480,
+        videoHeight: 640,
+        videoCropWidth: 288,
+        videoCropHeight: 188,
+    },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { CombinedHookStories } from "@react-barcode-scanner/hooks";</code></pre>
+              </div>
+          
+          
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  has-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="DeviceListStories">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> DeviceListStories</h2>
+      <div class="badges">
+        <label for="c-error-1-camera-device-list-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-1-camera-device-list-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-1-camera-device-list-stories" class="badge err as-toggle">1/1 story errors</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/hooks/barcode/camera/DeviceList.stories.tsx">camera-device-list · ./src/stories/hooks/barcode/camera/DeviceList.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-1-camera-device-list-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-1-camera-device-list-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-1-camera-device-list-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;DeviceListStories&quot; component.
+  19 | };
+  20 |
+&gt; 21 | const meta: Meta&lt;typeof DeviceListStories&gt; = {
+     | ^
+  22 |     component: DeviceListStories,
+  23 |     title: &#39;Camera/Device List&#39;,
+  24 | };
+
+./src/stories/hooks/barcode/camera/DeviceList.stories.tsx:
+import React from &#39;react&#39;;
+import { Meta, StoryObj } from &#39;@storybook/react&#39;;
+import { useGetDeviceList } from &#39;../../../../hooks&#39;;
+
+const DeviceListStories = (props: any) =&gt; {
+    const { deviceList } = useGetDeviceList();
+
+    return (
+        &lt;div&gt;
+            Device List:{&#39; &#39;}
+            &lt;textarea
+                readOnly={true}
+                rows={10}
+                cols={100}
+                value={JSON.stringify(deviceList, undefined, 2)}
+            /&gt;
+        &lt;/div&gt;
+    );
+};
+
+const meta: Meta&lt;typeof DeviceListStories&gt; = {
+    component: DeviceListStories,
+    title: &#39;Camera/Device List&#39;,
+};
+
+export default meta;
+
+type Story = StoryObj&lt;typeof DeviceListStories&gt;;
+
+export const Primary: Story = {
+    args: {
+        hasPermission: true,
+    },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { DeviceListStories } from "@react-barcode-scanner/hooks";</code></pre>
+              </div>
+          
+          
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  has-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="SeparateHooksStories">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> SeparateHooksStories</h2>
+      <div class="badges">
+        <label for="c-error-2-scanner-separate-hooks-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-2-scanner-separate-hooks-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-2-scanner-separate-hooks-stories" class="badge err as-toggle">1/1 story errors</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/hooks/barcode/SeparateHooks.stories.tsx">scanner-separate-hooks · ./src/stories/hooks/barcode/SeparateHooks.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-2-scanner-separate-hooks-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-2-scanner-separate-hooks-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-2-scanner-separate-hooks-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;SeparateHooksStories&quot; component.
+  72 | };
+  73 |
+&gt; 74 | const meta: Meta&lt;typeof SeparateHooksStories&gt; = {
+     | ^
+  75 |     component: SeparateHooksStories,
+  76 |     title: &#39;Scanner/Separate Hooks&#39;,
+  77 | };
+
+./src/stories/hooks/barcode/SeparateHooks.stories.tsx:
+import React, { useState } from &#39;react&#39;;
+import { Meta, StoryObj } from &#39;@storybook/react&#39;;
+import { useScanCanvas, useVideoCanvas, useWebcam } from &#39;../../../hooks&#39;;
+
+import &#39;./CombinedHook.css&#39;;
+
+type SeparateHooksProps = {
+    canvasWidth?: number;
+    canvasHeight?: number;
+    videoWidth?: number;
+    videoHeight?: number;
+    zoom?: number;
+};
+
+const SeparateHooksStories = (props: SeparateHooksProps) =&gt; {
+    const {
+        canvasWidth = 320,
+        canvasHeight = 240,
+        videoWidth = 640,
+        videoHeight = 480,
+        zoom = 1,
+    } = props;
+
+    const [codes, setCodes] = useState&lt;string[]&gt;([]);
+    const [_devices, setDevices] = useState&lt;MediaDeviceInfo[]&gt;([]);
+
+    const onScan = (code: string) =&gt; {
+        setCodes(codes.concat(code));
+    };
+
+    const {
+        webcamVideo,
+        webcamVideoRef,
+        hasPermission,
+        trackSettings,
+    } = useWebcam({
+        onDevices: setDevices,
+    });
+    const { onDraw, canDetect, canvas, canvasRef } = useScanCanvas({
+        hasPermission,
+        onScan,
+    });
+
+    useVideoCanvas({
+        onDraw,
+        webcamVideo,
+        trackSettings,
+        shouldDraw: canDetect,
+        canvas,
+        hasPermission,
+        shouldPlay: true,
+        zoom,
+    });
+
+    return (
+        &lt;div&gt;
+            {hasPermission ? (
+                &lt;div className={&#39;scan-canvas-container&#39;}&gt;
+                    &lt;div className={&#39;scan-canvas-video&#39;}&gt;
+                        &lt;video ref={webcamVideoRef} width={videoWidth} height={videoHeight} /&gt;
+                    &lt;/div&gt;
+                    &lt;div className={&#39;scan-canvas&#39;}&gt;
+                        &lt;canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} /&gt;
+                    &lt;/div&gt;
+                    &lt;div className={&#39;scanned-codes&#39;}&gt;
+                        &lt;textarea rows={10} cols={100} readOnly={true} value={codes.join(&#39;\n&#39;)} /&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            ) : null}
+        &lt;/div&gt;
+    );
+};
+
+const meta: Meta&lt;typeof SeparateHooksStories&gt; = {
+    component: SeparateHooksStories,
+    title: &#39;Scanner/Separate Hooks&#39;,
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof SeparateHooksStories&gt;;
+
+export const Primary: Story = {
+    args: {
+        zoom: 2,
+        canvasWidth: 320,
+        canvasHeight: 240,
+        videoWidth: 640,
+        videoHeight: 480,
+    },
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { SeparateHooksStories } from "@react-barcode-scanner/hooks";</code></pre>
+              </div>
+          
+          
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  has-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="VideoCanvasStories">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> VideoCanvasStories</h2>
+      <div class="badges">
+        <label for="c-error-3-video-video-canvas-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-3-video-video-canvas-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-3-video-video-canvas-stories" class="badge err as-toggle">1/1 story errors</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/hooks/barcode/VideoCanvas.stories.tsx">video-video-canvas · ./src/stories/hooks/barcode/VideoCanvas.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-3-video-video-canvas-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-3-video-video-canvas-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-3-video-video-canvas-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;VideoCanvasStories&quot; component.
+  32 | };
+  33 |
+&gt; 34 | const meta: Meta&lt;typeof VideoCanvasStories&gt; = {
+     | ^
+  35 |     component: VideoCanvasStories,
+  36 |     title: &#39;Video/Video Canvas&#39;,
+  37 | };
+
+./src/stories/hooks/barcode/VideoCanvas.stories.tsx:
+import React from &#39;react&#39;;
+import { Meta, StoryObj } from &#39;@storybook/react&#39;;
+import { useRef } from &#39;react&#39;;
+import { useVideoCanvas, useWebcam } from &#39;../../../hooks&#39;;
+
+const VideoCanvasStories = () =&gt; {
+    const { webcamVideo, webcamVideoRef, hasPermission, trackSettings } = useWebcam();
+    const canvasRef = useRef&lt;HTMLCanvasElement | null&gt;(null);
+
+    useVideoCanvas({
+        webcamVideo,
+        trackSettings,
+        canvas: canvasRef.current,
+        hasPermission,
+        shouldPlay: true,
+    });
+
+    return (
+        &lt;div&gt;
+            {hasPermission ? (
+                &lt;div className={&#39;video-canvas-container&#39;}&gt;
+                    &lt;div className={&#39;video-canvas-video&#39;}&gt;
+                        &lt;video ref={webcamVideoRef} width={640} height={480} /&gt;
+                    &lt;/div&gt;
+                    &lt;div className={&#39;video-canvas&#39;}&gt;
+                        &lt;canvas ref={canvasRef} width={320} height={240} /&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+            ) : null}
+        &lt;/div&gt;
+    );
+};
+
+const meta: Meta&lt;typeof VideoCanvasStories&gt; = {
+    component: VideoCanvasStories,
+    title: &#39;Video/Video Canvas&#39;,
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof VideoCanvasStories&gt;;
+
+export const Primary: Story = {
+    args: {},
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { VideoCanvasStories } from "@react-barcode-scanner/hooks";</code></pre>
+              </div>
+          
+          
+        </div>
+    
+  </div>
+</article>
+<article
+  class="card 
+  has-error 
+  has-info 
+  has-story-error
+  no-doc-error"
+  role="listitem"
+  aria-label="WebcamStories">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-err"></span> WebcamStories</h2>
+      <div class="badges">
+        <label for="c-error-4-video-webcam-err" class="badge err as-toggle">prop type error</label>
+        <label for="c-error-4-video-webcam-info" class="badge info as-toggle">1 info</label>
+        <label for="c-error-4-video-webcam-stories" class="badge err as-toggle">1/1 story errors</label>
+        
+      </div>
+    </div>
+    <div class="meta" title="./src/stories/hooks/barcode/Webcam.stories.tsx">video-webcam · ./src/stories/hooks/barcode/Webcam.stories.tsx</div>
+    
+    
+    
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  <input id="c-error-4-video-webcam-err" class="tg tg-err" type="checkbox" hidden />
+  <input id="c-error-4-video-webcam-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-error-4-video-webcam-stories" class="tg tg-stories" type="checkbox" hidden />
+  
+  
+
+  <div class="panels">
+    
+        <div class="panel panel-err">
+          
+    <div class="note err">
+      <div class="note-title">Prop type error</div>
+      <div class="note-body"><pre><code>No component file found for the &quot;WebcamStories&quot; component.
+  11 | };
+  12 |
+&gt; 13 | const meta: Meta&lt;typeof WebcamStories&gt; = {
+     | ^
+  14 |     component: WebcamStories,
+  15 |     title: &#39;Video/Webcam&#39;,
+  16 | };
+
+./src/stories/hooks/barcode/Webcam.stories.tsx:
+import React from &#39;react&#39;;
+import { Meta, StoryObj } from &#39;@storybook/react&#39;;
+import { useWebcam } from &#39;../../../hooks&#39;;
+
+const WebcamStories = (props: any) =&gt; {
+    const { webcamVideoRef, hasPermission } = useWebcam({});
+
+    return (
+        &lt;div&gt;{hasPermission ? &lt;video ref={webcamVideoRef} width={640} height={480} autoPlay={true} /&gt; : null}&lt;/div&gt;
+    );
+};
+
+const meta: Meta&lt;typeof WebcamStories&gt; = {
+    component: WebcamStories,
+    title: &#39;Video/Webcam&#39;,
+};
+
+export default meta;
+type Story = StoryObj&lt;typeof WebcamStories&gt;;
+
+export const Primary: Story = {
+    args: {},
+};
+</code></pre></div>
+    </div>
+        </div>
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+    
+        <div class="panel panel-stories">
+          
+            <div class="note err">
+              <div class="row">
+                <span class="ex-name">Primary</span>
+                <span class="badge err">story error</span>
+              </div>
+              
+              
+              
+              <pre><code>Could not generate snippet without component name.</code></pre>
+            </div>
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { WebcamStories } from "@react-barcode-scanner/hooks";</code></pre>
+              </div>
+          
+          
+        </div>
+    
+  </div>
+</article></div>
+        </section>
+      </div>
+    
+    
+  </div>
+</main>
+</body>
+</html>  

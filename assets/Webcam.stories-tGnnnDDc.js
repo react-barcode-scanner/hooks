@@ -1,0 +1,3 @@
+import{a as e,n as t}from"./chunk-BneVvdWh.js";import{t as n}from"./iframe-9zK5Qo-C.js";import{r,t as i}from"./hooks-cvPh8UoV.js";var a,o,s,c,l;t((()=>{a=e(n()),i(),o=e=>{let{webcamVideoRef:t,hasPermission:n}=r({});return a.createElement(`div`,null,n?a.createElement(`video`,{ref:t,width:640,height:480,autoPlay:!0}):null)},s={component:o,title:`Video/Webcam`},c={args:{}},c.parameters={...c.parameters,docs:{...c.parameters?.docs,source:{originalSource:`{
+  args: {}
+}`,...c.parameters?.docs?.source}}},l=[`Primary`]}))();export{c as Primary,l as __namedExportsOrder,s as default};

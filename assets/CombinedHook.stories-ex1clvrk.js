@@ -1,0 +1,12 @@
+import{a as e,n as t}from"./chunk-BneVvdWh.js";import{t as n}from"./iframe-9zK5Qo-C.js";import{n as r,t as i}from"./hooks-cvPh8UoV.js";import{t as a}from"./CombinedHook-cvgksZjk.js";var o,s,c,l,u,d;t((()=>{o=e(n()),s=e(n()),i(),a(),c=e=>{let{canvasWidth:t=480,canvasHeight:n=640,videoWidth:i=480,videoHeight:a=640,videoCropWidth:c=640,videoCropHeight:l=376,zoom:u=1}=e,[d,f]=(0,s.useState)([]),[p,m]=(0,s.useState)([]),[h,g]=(0,s.useState)(),{trackVideoWidth:_,trackVideoHeight:v,webcamVideoRef:y,canvasRef:b,hasPermission:x}=r({zoom:u,onDevices:e=>{m(e)},onScan:e=>{f(d.concat(e))},deviceChoiceOptions:(0,o.useMemo)(()=>{if(h)return{deviceId:{exact:h}}},[h])}),S=(0,o.useRef)(null);return(0,o.useEffect)(()=>{S.current?.style.setProperty(`--video-width`,`${_??i}px`),S.current?.style.setProperty(`--video-height`,`${v??a}px`),S.current?.style.setProperty(`--canvas-width`,`${_??t}px`),S.current?.style.setProperty(`--canvas-height`,`${v??n}px`),S.current?.style.setProperty(`--video-crop-width`,`${c}px`),S.current?.style.setProperty(`--video-crop-height`,`${l}px`)},[S.current,_,v,i,a,t,n,c,l]),o.createElement(`div`,null,x?o.createElement(`div`,{ref:S,className:`react-barcode-scanner-container`},o.createElement(`video`,{ref:y,width:_??i,height:v??a,playsInline:!0}),o.createElement(`canvas`,{ref:b,width:t,height:n})):null,p.length>0&&o.createElement(`div`,{className:`devices-container`},o.createElement(`select`,{onChange:e=>{g(e.currentTarget.value)}},p.map(e=>o.createElement(`option`,{key:e.deviceId,value:e.deviceId},e.label,` (`,e.deviceId.slice(0,8),`...)`)))),o.createElement(`div`,{className:`scanned-codes`},o.createElement(`textarea`,{rows:10,cols:100,readOnly:!0,value:d.join(`
+`)})))},l={component:c,title:`Scanner/Combined Hook`},u={args:{zoom:1,canvasWidth:480,canvasHeight:640,videoWidth:480,videoHeight:640,videoCropWidth:288,videoCropHeight:188}},u.parameters={...u.parameters,docs:{...u.parameters?.docs,source:{originalSource:`{
+  args: {
+    zoom: 1,
+    canvasWidth: 480,
+    canvasHeight: 640,
+    videoWidth: 480,
+    videoHeight: 640,
+    videoCropWidth: 288,
+    videoCropHeight: 188
+  }
+}`,...u.parameters?.docs?.source}}},d=[`Primary`]}))();export{u as Primary,d as __namedExportsOrder,l as default};
