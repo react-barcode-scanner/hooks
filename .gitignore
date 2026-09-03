@@ -25,3 +25,4 @@ yarn-error.log*
 dist
 storybook-static
 /packages/
+react-barcode-scanner-hooks-v0.0.74.tgz
