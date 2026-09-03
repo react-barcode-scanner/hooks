@@ -6,7 +6,7 @@
         "directory": "packages/@react-barcode-scanner/hooks"
     },
     "license": "MIT",
-    "version": "0.0.73",
+    "version": "0.0.74",
     "engines": {
         "node": ">=24"
     },
@@ -20,7 +20,8 @@
     ],
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@undecaf/barcode-detector-polyfill": "0.9.23"
+        "@undecaf/barcode-detector-polyfill": "0.9.23",
+        "@undecaf/zbar-wasm": "0.11.0"
     },
     "scripts": {
         "storybook": "storybook dev -p 6006 --https --ssl-cert ./scripts/localhost.crt --ssl-key ./scripts/localhost.key",
@@ -78,6 +79,7 @@
         "@babel/preset-env": "7.29.7",
         "@rollup/plugin-commonjs": "29.0.2",
         "@rollup/plugin-node-resolve": "16.0.3",
+        "@rollup/plugin-replace": "^6.0.3",
         "@rollup/plugin-typescript": "12.3.0",
         "@storybook/addon-links": "10.3.3",
         "@storybook/react": "10.3.3",

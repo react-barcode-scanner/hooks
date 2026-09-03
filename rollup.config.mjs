@@ -1,3 +1,4 @@
+import replace from '@rollup/plugin-replace';
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
@@ -7,6 +8,7 @@ import dts from 'rollup-plugin-dts';
 import postcss from 'rollup-plugin-postcss';
 
 import packageJson from './package.json' with { type: 'json' };
+import { ZBAR_WASM_REPOSITORY } from '@undecaf/barcode-detector-polyfill/zbar-wasm';
 
 const makeDefaultConfig = hooksOrComponents => {
     return [
@@ -27,6 +29,15 @@ const makeDefaultConfig = hooksOrComponents => {
             external: ['react', 'react-dom'],
             plugins: [
                 resolve(),
+                replace({
+                    values: {
+                        // Replaces the repository URL with a local reference
+                        [ZBAR_WASM_REPOSITORY]: '@undecaf/zbar-wasm',
+                        '/dist/main.js': '',
+                        '/dist/index.js': '',
+                    },
+                    preventAssignment: true,
+                }),
                 commonjs(),
                 typescript({
                     tsconfig: `./tsconfig.json`,
