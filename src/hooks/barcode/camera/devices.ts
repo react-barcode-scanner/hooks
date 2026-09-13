@@ -41,7 +41,7 @@ const listDevices = async (): Promise<MediaDeviceInfo[]> => {
         if ((e as Object).toString().includes('videoinput failed')) {
             window.alert(`You may have more than one application or window using your camera.`);
         } else {
-            console.log(e);
+            console.info('Device permission not granted', e);
         }
         return [];
     }
