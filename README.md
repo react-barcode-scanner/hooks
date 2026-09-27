@@ -36,3 +36,23 @@ API, but here are the available options:
 
 There are many lower level hooks used by the primary hook which can also
 be explored separately.
+
+### Scanning a still image
+
+`useScanImage` reads barcodes from a still image instead of the webcam. Pass
+the image as a data URI string or a `Blob` (a `File` from an
+`<input type="file">` works as-is):
+
+```tsx
+const { barcode, barcodes, isScanning, error } = useScanImage({ image });
+```
+
+- `image`: a data URI or `Blob`. The image is scanned whenever this changes.
+  Pass `null`/`undefined` to clear the result.
+- `onScan`: optional callback invoked with each detected barcode value.
+- `barcodeDetectorOptions`: same as `useBarcodeScanner`; defaults to UPC-A and
+  EAN-13.
+
+It returns `barcode` (the first value found, or `undefined`), `barcodes` (every
+`DetectedBarcode`), `isScanning` and `error`. The non-hook `scanImage(image)`
+function is also exported for use outside React.
